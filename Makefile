@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -W
 
 SERVER_SRC_DIR = TCP_Server
-SERVER_SRCS = $(wildcard $(SERVER_SRC_DIR)/*.c)
+SERVER_SRCS = $(wildcard $(SERVER_SRC_DIR)/*/*.c)
 SERVER_OBJS = $(SERVER_SRCS:.c=.o)
 SERVER = server
 

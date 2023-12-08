@@ -12,8 +12,8 @@
 #include <sys/time.h>
 #include <sys/ioctl.h>
 
-#include "req_handle.h"
-#include "msg_handle.h"
+#include "../msg/req_handle.h"
+#include "../msg/msg_handle.h"
 
 #define BACKLOG 20
 #define BUFF_SIZE 1024
