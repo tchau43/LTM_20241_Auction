@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-12-15T00:34:37.833Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="Gxeb80nlfWb-1asCuXv9" version="22.1.2" type="device">
+<mxfile host="Electron" modified="2023-12-15T00:35:19.054Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="3KROWEdz1FjmgvEhMAWk" version="22.1.2" type="device">
   <diagram id="HG5WKPCzB3062lQp25CD" name="Page-1">
     <mxGraphModel dx="780" dy="1604" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -13,9 +13,9 @@
         <mxCell id="UfLgme9Dmy6jaAX3rJPS-2" value="Create User Session" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry y="-920" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="UfLgme9Dmy6jaAX3rJPS-3" value="Session" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;direction=east;" parent="1" vertex="1" collapsed="1">
-          <mxGeometry x="390" y="-1080" width="90" height="30" as="geometry">
-            <mxRectangle x="390" y="-1080" width="140" height="130" as="alternateBounds" />
+        <mxCell id="UfLgme9Dmy6jaAX3rJPS-3" value="Session" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;direction=east;" parent="1" vertex="1">
+          <mxGeometry x="390" y="-1080" width="140" height="130" as="geometry">
+            <mxRectangle x="390" y="-1080" width="90" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="UfLgme9Dmy6jaAX3rJPS-4" value="+ connSock: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="UfLgme9Dmy6jaAX3rJPS-3" vertex="1">
@@ -59,9 +59,9 @@
         <mxCell id="UfLgme9Dmy6jaAX3rJPS-24" value="«Array»&lt;br&gt;Room[30]" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="205" y="-650" width="150" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="UfLgme9Dmy6jaAX3rJPS-25" value="Room" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;direction=east;" parent="1" vertex="1" collapsed="1">
-          <mxGeometry x="590" y="-1080" width="90" height="30" as="geometry">
-            <mxRectangle x="590" y="-1080" width="200" height="196" as="alternateBounds" />
+        <mxCell id="UfLgme9Dmy6jaAX3rJPS-25" value="Room" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;direction=east;" parent="1" vertex="1">
+          <mxGeometry x="590" y="-1080" width="200" height="196" as="geometry">
+            <mxRectangle x="590" y="-1080" width="90" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="UfLgme9Dmy6jaAX3rJPS-26" value="+ roomName: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="UfLgme9Dmy6jaAX3rJPS-25" vertex="1">
