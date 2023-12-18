@@ -11,36 +11,9 @@
 #include <errno.h>
 
 #include "req_handle.h"
+#include "send_msg.h"
 
 #define BUFF_SIZE 1024
-
-/**
- * @function send_msg: send message to client via sockfd
- *
- * @param sockfd: number of socket that use to send message
- * @param res_code: result code of request
- * 
- * @return :1 if success
- *          0 if get an error
- */
-
-int send_msg(int sockfd, int res_code)
-{
-    char buff[4];
-    int sent_bytes, received_bytes;
-
-    memset(buff, '\0', sizeof(buff));
-    sprintf(buff, "%d", res_code);
-
-    sent_bytes = send(sockfd, &buff, 3, 0);
-    if (sent_bytes < 0)
-    {
-        perror("\nError6:");
-        return 0;
-    }
-    printf("Sent: %s\n", buff);
-    return 1;
-}
 
 /***
  * @function check_auth: Read the account information file and check the state of account
