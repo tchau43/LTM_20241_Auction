@@ -1,16 +1,9 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include "room.h"
-/*Item define struct*/
-typedef struct item{
-    char name[30];
-    int owner;
-    int current_bid;
-    int best_cus;
-    int direct_sell_price;
-    struct item * next;
-}item;
+#include "../model/item_model.h"
+#include "../model/room_model.h"
+#include "../model/session_model.h"
 /*Create new item*/
 item* create_item_node(char name[], int owner, int start_bid, int direct_sell_price);
 /*Add new item to queue*/

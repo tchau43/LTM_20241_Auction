@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pthread.h>
 #include <unistd.h>
 
@@ -39,4 +40,17 @@ int main()
     printf("%d\n", join_room(roomlist, ROOM_LIST_SIZE,"lmao1", &sess2, 2)); 
 
     printf("%d\n", addItem("item1", 100, 1000, &roomlist[sess.in_room], sess, 2));
+    printf("%d\n", addItem("item2", 100, 1000, &roomlist[sess.in_room], sess, 2));
+    printf("%d\n", addItem("item3", 100, 1000, &roomlist[sess.in_room], sess, 2));
+    showAllItemInRoom(roomlist[0]);
+}
+
+void showAllItemInRoom(room r){
+    item *i = r.item_queue;
+    while(i!=NULL){
+        printf("%s ||", i->name);
+        i = i->next;
+    }
+    printf("\n");
+
 }

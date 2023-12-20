@@ -1,14 +1,16 @@
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef SESS_HANDLE_H
+#define SESS_HANDLE_H
 
-#define BUFF_SIZE 1024
+#include "../model/session_model.h"
+/**
+ * Init session store
+ * 
+ * @param sess_store: session storage
+ * @param sess_n: max size of session in storage
+*/
 
-typedef struct session
-{
-    int login_state;
-    char username[30];
-    int in_room;
-    int isLoggedIn;
-}session;
+void init_session_store(session sess_store[], int sess_n);
+
+int create_new_session(session sess_store[], int sess_n, int conn_sock);
 
 #endif

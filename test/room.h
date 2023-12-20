@@ -1,17 +1,7 @@
-#ifndef ROOM_H
-#define ROOM_H
+#ifndef ROOM_H_H
+#define ROOM_H_H
 
-#include<pthread.h>
-#include "item.h"
-#include "session.h"
-
-typedef struct room{
-    char name[30];
-    int userNum;
-    int userList[30];
-    item* item_queue;
-    pthread_t time_counter;
-}room;
+#include"room_model.h"
 
 /**
  * Init roomlist
@@ -49,6 +39,5 @@ int create_room(room roomlist[],int n, char name[], session sess);
  *          4 if room is not found
 */
 int join_room(room roomlist[], int room_n,char room_name[], session* sess, int sesit);
-
 
 #endif

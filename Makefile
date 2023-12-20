@@ -22,6 +22,6 @@ runs:
 	./server 5550
 runc:
 	./client 127.0.0.1 5550
-test:
+test2:
 	gcc -pthread tcp_test.c -o test1
 	./test1 5550 10
