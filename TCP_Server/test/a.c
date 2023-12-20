@@ -4,6 +4,10 @@
 #include <unistd.h>
 
 #include "item.h"
+#include "room.h"
+
+#define ROOM_LIST_SIZE 3
+
 void *timecounter(void *a)
 {
     sleep(10);
@@ -12,17 +16,27 @@ void *timecounter(void *a)
 
 int main()
 {
-    item* queue = NULL;
-    push_item(&queue, create_item_node("lmao2", 2, 123, 456));
-    push_item(&queue, create_item_node("lmao3", 2, 123, 456));
-    push_item(&queue, create_item_node("lmao4", 2, 123, 456));
-    push_item(&queue, create_item_node("lmao5", 2, 123, 456));
-    delete_item(&queue, "lmao3");
-    pop_item(&queue);
-    item *it = queue;
-    while (it != NULL)
-    {
-        printf("%s ||  ", it->name);
-        it = it->next;
-    }
+    int cmd;
+    room *roomlist = (room *)malloc(sizeof(room) * ROOM_LIST_SIZE);
+    init_roomlist(roomlist, ROOM_LIST_SIZE);
+
+    session sess;
+    sess.is_loggedin = 1;
+    sess.in_room = -1;
+    sess.conn_sock = 1;
+    strcpy(sess.username, "abc\0");
+
+    session sess2;
+    sess2.is_loggedin = 1;
+    sess2.in_room = -1;
+    sess2.conn_sock = 1;
+    strcpy(sess2.username, "abc\0");
+
+    printf("%d\n", create_room(roomlist, ROOM_LIST_SIZE, "lmao1", sess));
+    printf("%d\n", create_room(roomlist, ROOM_LIST_SIZE, "lmao2", sess));
+
+    printf("%d\n", join_room(roomlist, ROOM_LIST_SIZE,"lmao1", &sess, 2));   
+    printf("%d\n", join_room(roomlist, ROOM_LIST_SIZE,"lmao1", &sess2, 2)); 
+
+    printf("%d\n", addItem("item1", 100, 1000, &roomlist[sess.in_room], sess, 2));
 }

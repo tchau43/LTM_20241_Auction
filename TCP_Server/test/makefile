@@ -1,5 +1,6 @@
 all:
 	gcc -c -o item.o item.c
-	gcc a.c -o a item.o
+	gcc -c -o room.o room.c
+	gcc a.c -o a item.o room.o
 clean:
-	rm -f item.o
+	rm -f *.o

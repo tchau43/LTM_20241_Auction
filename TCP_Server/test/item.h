@@ -1,3 +1,7 @@
+#ifndef ITEM_H
+#define ITEM_H
+
+#include "room.h"
 /*Item define struct*/
 typedef struct item{
     char name[30];
@@ -24,4 +28,6 @@ int delete_item(item** queue, char name[]);
  * @param queue: queue that use to get
  * @return : 1 if OK
 */
-int getItemList(item* queue);
+int addItem(char name[], int start_bid, int direct_sell_price, room* room_join, session sess, int sesit);
+
+#endif
