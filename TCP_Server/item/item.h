@@ -1,12 +1,9 @@
-/*Item define struct*/
-typedef struct item{
-    char name[30];
-    int owner;
-    int current_bid;
-    int best_cus;
-    int direct_sell_price;
-    struct item * next;
-}item;
+#ifndef ITEM_H
+#define ITEM_H
+
+#include "../model/item_model.h"
+#include "../model/room_model.h"
+#include "../model/session_model.h"
 /*Create new item*/
 item* create_item_node(char name[], int owner, int start_bid, int direct_sell_price);
 /*Add new item to queue*/
@@ -24,4 +21,6 @@ int delete_item(item** queue, char name[]);
  * @param queue: queue that use to get
  * @return : 1 if OK
 */
-int getItemList(item* queue);
+int addItem(char name[], int start_bid, int direct_sell_price, room* room_join, session sess, int sesit);
+
+#endif

@@ -61,13 +61,13 @@ int check_auth(char *username)
  *          0 if get an error
  */
 
-int request_handle(int conn_sock, char *req, int *login_state)
+int request_handle(int conn_sock, char* req, session* sess)
 {
     char cmd[10];
     sscanf(req, "%s", cmd);
     if (strcmp(cmd, "USER") == 0)
     {
-        if (*login_state == 1)
+        if (sess->is_loggedin== 1)
         {
             send_msg(conn_sock, 213);
             return 1;
@@ -78,7 +78,7 @@ int request_handle(int conn_sock, char *req, int *login_state)
         switch (check_auth(username))
         {
         case 1:
-            *login_state = 1;
+            sess->is_loggedin= 1;
             return send_msg(conn_sock, 110);
         case 0:
             return send_msg(conn_sock, 211);
@@ -91,7 +91,7 @@ int request_handle(int conn_sock, char *req, int *login_state)
 
     else if (strcmp(cmd, "POST") == 0)
     {
-        if (*login_state == 0)
+        if (sess->is_loggedin== 0)
         {
             return send_msg(conn_sock, 221);
         }
@@ -103,9 +103,9 @@ int request_handle(int conn_sock, char *req, int *login_state)
 
     else if (strcmp(cmd, "BYE") == 0)
     {
-        if (*login_state == 1)
+        if (sess->is_loggedin== 1)
         {
-            *login_state = 0;
+            sess->is_loggedin= 0;
             return send_msg(conn_sock, 130);
         }
         else

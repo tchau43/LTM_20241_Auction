@@ -1,8 +1,7 @@
 #ifndef ROOM_H_H
 #define ROOM_H_H
 
-#include"../model/room_model.h"
-#include"../model/session_model.h"
+#include"room_model.h"
 
 /**
  * Init roomlist

@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "req_handle.h"
+#include "msg_handle.h"
 
 #define BUFF_SIZE 1024
 #define DELIMITER "\r\n"
@@ -26,7 +27,7 @@
  *          0 if get an error or connection close
  *
  */
-int msg_handle(int conn_sock, int *login_state, char *buff)
+int msg_handle(int conn_sock, session* sess)
 {
     char *req = (char *)malloc(BUFF_SIZE);
     char tmp[BUFF_SIZE];
@@ -46,27 +47,26 @@ int msg_handle(int conn_sock, int *login_state, char *buff)
     }
 
     req[received_bytes] = '\0';
-
     while (strlen(req) > 0)
     {
         char *part2 = strstr(req, DELIMITER);
         if (part2 == NULL)
         {
-            strcat(buff, req);
+            strcat(sess->buff, req);
             break;
         }
         else
         {
             int part2_n = strlen(part2);
-            strncat(buff, req, strlen(req) - part2_n);
-            printf("%d: %s\n", conn_sock, buff);
-            if (strlen(buff) == 0)
+            strncat(sess->buff, req, strlen(req) - part2_n);
+            printf("%d: %s\n", conn_sock, sess->buff);
+            if (strlen(sess->buff) == 0)
                 continue;
-            if (!request_handle(conn_sock, buff, login_state))
+            if (!request_handle(conn_sock, sess->buff, sess))
             {
                 return 0;
             }
-            memset(buff, '\0', sizeof(buff));
+            memset(sess->buff, '\0', sizeof(sess->buff));
             memset(tmp, '\0', sizeof(tmp));
             strcpy(tmp, part2 + 2);
             memset(req, '\0', sizeof(req));

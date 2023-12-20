@@ -15,19 +15,18 @@
 #include "../msg/req_handle.h"
 #include "../msg/msg_handle.h"
 #include "../msg/send_msg.h"
+#include "../model/session_model.h"
+#include "../model/room_model.h"
+#include "../session/session.h"
+
 #define BACKLOG 20
 #define BUFF_SIZE 1024
+#define ROOM_NUM 30
 
-void processData(char *in, char *out);
-
-int receiveData(int s, char *buff, int size, int flags);
-
-int sendData(int s, char *buff, int size, int flags);
-
-int main(int argc, char* argv[])
-{   
+int main(int argc, char *argv[])
+{
     // Get port number
-        if (argc != 2)
+    if (argc != 2)
     {
         printf("Usage: %s [port_number]", argv[0]);
         return 0;
@@ -39,10 +38,12 @@ int main(int argc, char* argv[])
     int nready, client[FD_SETSIZE];
     fd_set readfds, allset;
     int *login_state;
-    login_state = (int *)malloc(FD_SETSIZE * sizeof(int));
     char **connBuff;
     socklen_t clilen;
     struct sockaddr_in cliaddr, servaddr;
+
+    room *room_store = (room *)malloc(sizeof(room) * ROOM_NUM);
+    session *sess_store = (session *)malloc(sizeof(session) * FD_SETSIZE);
 
     // Set listen socket for server
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -71,6 +72,7 @@ int main(int argc, char* argv[])
     }
 
     // Preset for client[] and readfds
+    init_session_store(sess_store, FD_SETSIZE);
     maxfd = listenfd;
     maxi = -1;
     for (int i = 0; i < FD_SETSIZE; i++)
@@ -108,38 +110,29 @@ int main(int argc, char* argv[])
             else
             {
                 printf("You got connection from %s\n", inet_ntoa(cliaddr.sin_addr));
-                int it = 0;
-                // Add connection sock to client[]
-                for (it = 0; it < FD_SETSIZE; it++)
-                    if (client[it] < 0)
-                    {
-                        client[it] = connfd;
-                        break;
-                    }
-
-                if (it == FD_SETSIZE)
+                int index = create_new_session(sess_store, FD_SETSIZE, connfd);
+                if (index < 0)
                 {
-                    printf("\nToo many clients");
+                    printf("Too many client\n");
                     close(connfd);
                 }
                 else
                 {
-                    // Add connected sock to socklist
                     FD_SET(connfd, &allset);
-                    memset(connBuff[it], '\0', sizeof(connBuff[it]));
-                    login_state[it] = 0;
                     if (!send_msg(connfd, 100))
                     {
                         FD_CLR(connfd, &allset);
                         close(connfd);
-                        client[it] = -1;
+                        sess_store[index].conn_sock = -1;
                     }
                     else
                     {
-                        if (connfd > maxfd)
+                        if (maxfd < connfd)
                             maxfd = connfd;
-                        if (it > maxi)
-                            maxi = it;
+
+                        if (index > maxi)
+                            maxi = index;
+                        printf("%d\n", maxi);
                     }
                     if (--nready <= 0)
                         continue;
@@ -150,15 +143,17 @@ int main(int argc, char* argv[])
         // Hearing request from client
         for (int i = 0; i <= maxi; i++)
         {
-            if ((sockfd = client[i]) < 0)
+
+            if ((sockfd = sess_store[i].conn_sock) < 0)
                 continue;
             if (FD_ISSET(sockfd, &readfds))
             {
-                if (!msg_handle(sockfd, login_state + i, connBuff[i]))
+
+                if (!msg_handle(sockfd, &(sess_store[i])))
                 {
                     FD_CLR(sockfd, &allset);
                     close(sockfd);
-                    client[i] = -1;
+                    sess_store[i].conn_sock = -1;
                 }
                 if (--nready <= 0)
                     break;
@@ -170,7 +165,9 @@ int main(int argc, char* argv[])
     for (int i = 0; i < FD_SETSIZE; i++)
     {
         free(connBuff + i);
+        free(sess_store + i);
     }
+    free(sess_store);
     free(login_state);
     free(connBuff);
     return 0;

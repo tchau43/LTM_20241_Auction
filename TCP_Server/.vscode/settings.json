@@ -2,6 +2,7 @@
     "files.associations": {
         "unistd.h": "c",
         "types.h": "c",
-        "msg_handle.h": "c"
+        "msg_handle.h": "c",
+        "stdlib.h": "c"
     }
 }
