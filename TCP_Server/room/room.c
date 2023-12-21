@@ -30,12 +30,12 @@ int findRoom(room roomlist[], int n, char room_name[])
     return -1;
 }
 
-int create_room(room roomlist[], int n, char name[], session sess)
+enum RoomStatus create_room(room roomlist[], int n, char name[], session sess)
 {
     if (!sess.is_loggedin)
-        return 3;
+        return USER_NOT_LOGINED_IN;
     if (findRoom(roomlist, n, name) != -1)
-        return 2;
+        return ROOM_ALREADY_EXIST;
 
     for (int i = 0; i < n; i++)
     {
@@ -44,30 +44,30 @@ int create_room(room roomlist[], int n, char name[], session sess)
             roomlist[i].userNum = 0;
             strncpy(roomlist[i].name, name, 30);
             printf("Create success\n");
-            return 0;
+            return ROOM_OK;
         }
     }
-    return 1;
+    return FULL_ROOM;
 }
 
-int join_room(room roomlist[], int room_n, char room_name[], session* sess, int sesit)
+enum RoomStatus join_room(room roomlist[], int room_n, char room_name[], session* sess, int sesit)
 {
     if (!sess->is_loggedin)
     {
-        return 1;
+        return USER_NOT_LOGINED_IN;
     }
 
     if (sess->in_room != -1)
     {
-        return 2;
+        return ROOM_ALREADY_EXIST;
     }
 
     int it = findRoom(roomlist, room_n, room_name);
     if (it == -1)
-        return 4;
+        return ROOM_NOT_FOUND;
 
     if (roomlist[it].userNum == 3)
-        return 3;
+        return FULL_ROOM;
 
     for (int i = 0; i < 3; i++)
     {
@@ -77,9 +77,9 @@ int join_room(room roomlist[], int room_n, char room_name[], session* sess, int 
             roomlist[it].userList[i] = sesit;
             sess->in_room = it;
             printf("Join success:%d|%d\n", roomlist[it].userNum, it);
-            return 0;
+            return ROOM_OK;
         }
     }
 
-    return 5;
+    return UNIDENTIFIED;
 }

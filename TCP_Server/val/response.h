@@ -5,9 +5,10 @@
 
 #define LOGINOK 1010 //  login success
 #define UNAMENF 2011 //  usename not found
-#define PASSWRONG 2012 //  password wrong
+#define WRONG_PASSWORD 2012 //  password wrong
 #define ALREADYLOGIN 2013 //  already login
 #define ACCLOGIN 2014 //  This account already login in other client
+#define ACCBLOCK 2015 // Account is blocked 
 
 #define JOINNOK 1020 //  Join success
 #define NOTLOGIN 2021 //  Not logged in

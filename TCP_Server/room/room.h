@@ -4,6 +4,15 @@
 #include"../model/room_model.h"
 #include"../model/session_model.h"
 
+enum RoomStatus {
+    ROOM_OK,
+    FULL_ROOM,
+    ROOM_ALREADY_EXIST,
+    USER_NOT_LOGINED_IN,
+    ROOM_NOT_FOUND,
+    UNIDENTIFIED
+}
+
 /**
  * Init roomlist
  * @param roomlist: roomlist use to init
@@ -17,12 +26,11 @@ void init_roomlist(room roomlist[], int n);
  * @param name:room name 
  * @param n: size of roomlist
  * 
- * @return :0 if Ok,
- *          1 if roomlist full,
- *          2 if room already exist,
- *          3 if user not logged in
+ * @return : room status 
 */
-int create_room(room roomlist[],int n, char name[], session sess);
+
+
+enum RoomStatus create_room(room roomlist[],int n, char name[], session sess);
 
 /**
  * Join room handle
@@ -39,6 +47,8 @@ int create_room(room roomlist[],int n, char name[], session sess);
  *          3 if room is full,
  *          4 if room is not found
 */
-int join_room(room roomlist[], int room_n,char room_name[], session* sess, int sesit);
+
+
+enum RoomStatus join_room(room roomlist[], int room_n,char room_name[], session* sess, int sesit);
 
 #endif

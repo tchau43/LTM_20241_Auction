@@ -12,6 +12,7 @@
 
 #include "req_handle.h"
 #include "send_msg.h"
+#include "../val/response.h"
 
 #define BUFF_SIZE 1024
 
@@ -20,34 +21,44 @@
  *
  * @param username: a string to a input username
  *
- * @return: 1 if success
- *          0 if account is banned
- *          -1 if account is not found
+ * @return: LOGIN_SUCCESS if success
+ *          LG_USER_BLOCK if account is banned
+ *          LG_USER_NOT_EXIST if account is not found
+ *          WRONG_PASSWORD if input wrong password
  */
-
-int check_auth(char *username)
+enum AuthStatus{
+    LOGIN_SUCCESS, 
+    LG_USER_BLOCK,
+    LG_USER_NOT_EXIST,
+    INCORRECT_PASSWORD
+};
+enum AuthStatus check_auth(char *username, char *password)
 {
     FILE *fp = fopen("account.txt", "r");
     char line[BUFF_SIZE];
     char check_name[1000];
     int acc_state;
+    char check_password[1000];
     while (fgets(line, BUFF_SIZE, fp) != NULL)
     {
-        sscanf(line, "%s %d", check_name, &acc_state);
+        sscanf(line, "%s %d %s", check_name, &acc_state, &check_password);
         if (!strcmp(username, check_name))
         {
             if (acc_state)
             {
-                return 1;
+                if(!strcmp(password, check_password)) {
+                    return LOGIN_SUCCESS;
+                }
+                else return INCORRECT_PASSWORD;
             }
             else
             {
-                return 0;
+                return LG_USER_BLOCK;
             }
         }
     }
     fclose(fp);
-    return -1;
+    return LG_USER_NOT_EXIST;
 }
 
 /**
@@ -65,39 +76,46 @@ int request_handle(int conn_sock, char* req, session* sess)
 {
     char cmd[10];
     sscanf(req, "%s", cmd);
-    if (strcmp(cmd, "USER") == 0)
+    if (strcmp(cmd, "LOGIN") == 0)
     {
         if (sess->is_loggedin== 1)
         {
-            send_msg(conn_sock, 213);
+            send_msg(conn_sock, ALREADYLOGIN);
             return 1;
         }
         char username[1024];
+        char password[1024];
         memset(username, '\0', sizeof(username));
-        sscanf(req, "USER %s", username);
-        switch (check_auth(username))
+        sscanf(req, "USER %s PASSWORD %s", username,password);
+        
+        switch (check_auth(username, password))
         {
-        case 1:
+        case LOGIN_SUCCESS:
             sess->is_loggedin= 1;
-            return send_msg(conn_sock, 110);
-        case 0:
-            return send_msg(conn_sock, 211);
-        case -1:
-            return send_msg(conn_sock, 212);
+            return send_msg(conn_sock, LOGINOK);
+        case LG_USER_BLOCK:
+            return send_msg(conn_sock, ACCBLOCK);
+        case INCORRECT_PASSWORD:
+            return send_msg(conn_sock, WRONG_PASSWORD);
+        case LG_USER_NOT_EXIST:
+            return send_msg(conn_sock, UNAMENF);
         default:
             break;
         }
     }
 
-    else if (strcmp(cmd, "POST") == 0)
+    else if (strcmp(cmd, "JOIN_ROOM") == 0)
     {
+        
         if (sess->is_loggedin== 0)
         {
-            return send_msg(conn_sock, 221);
+            return send_msg(conn_sock, NOTLOGIN);
         }
         else
         {
-            return send_msg(conn_sock, 120);
+            send_msg(conn_sock, JOINNOK);
+            int room;
+            
         }
     }
 
