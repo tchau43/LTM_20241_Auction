@@ -3,6 +3,7 @@
         "unistd.h": "c",
         "types.h": "c",
         "msg_handle.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "session_model.h": "c"
     }
 }

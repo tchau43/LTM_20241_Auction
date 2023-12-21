@@ -12,8 +12,12 @@
 
 #include "req_handle.h"
 #include "send_msg.h"
+#include "../room/room.h"
+#include "../item/item.h"
+#include "../val/response.h"
 
 #define BUFF_SIZE 1024
+#define ROOM_NUM 30
 
 /***
  * @function check_auth: Read the account information file and check the state of account
@@ -23,6 +27,8 @@
  * @return: 1 if success
  *          0 if account is banned
  *          -1 if account is not found
+ *
+ *
  */
 
 int check_auth(char *username)
@@ -56,65 +62,76 @@ int check_auth(char *username)
  * @param conn_sock: a number of connected socket that use to send message
  * @param req: a string use to store request form client
  * @param login_state: a login state of session, 1 if logged in or 0 if not.
- * 
+ *
  * @return :1 if success
  *          0 if get an error
  */
 
-int request_handle(int conn_sock, char* req, session* sess)
+int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
 {
     char cmd[10];
     sscanf(req, "%s", cmd);
-    if (strcmp(cmd, "USER") == 0)
+    if (strcmp(cmd, "LOGIN") == 0)
     {
-        if (sess->is_loggedin== 1)
+        return send_msg(sess_store[sesit].conn_sock, 300);
+    }
+
+    else if (strcmp(cmd, "JOIN") == 0)
+    {
+        return send_msg(sess_store[sesit].conn_sock, 300);
+    }
+
+    // Create Room Handle
+    else if (strcmp(cmd, "ROOMCR") == 0)
+    {
+        char room_name[30];
+        sscanf(cmd, "ROOMCR %s", room_name);
+        if (strlen(room_name) <= 0)
+            return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
+
+        switch (create_room(roomstore, ROOM_NUM, room_name, sess_store[sesit]))
         {
-            send_msg(conn_sock, 213);
-            return 1;
-        }
-        char username[1024];
-        memset(username, '\0', sizeof(username));
-        sscanf(req, "USER %s", username);
-        switch (check_auth(username))
-        {
-        case 1:
-            sess->is_loggedin= 1;
-            return send_msg(conn_sock, 110);
         case 0:
-            return send_msg(conn_sock, 211);
-        case -1:
-            return send_msg(conn_sock, 212);
-        default:
-            break;
+            return send_msg(sess_store[sesit].conn_sock, ROOMCROK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, ROOMLFULL);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, ALREADYEXISTR);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
         }
     }
 
-    else if (strcmp(cmd, "POST") == 0)
+    else if (strcmp(cmd, "JOIN") == 0)
     {
-        if (sess->is_loggedin== 0)
+        return send_msg(sess_store[sesit].conn_sock, 300);
+    }
+
+    else if (strcmp(cmd, "ITEMADD") == 0)
+    {
+        char item_name[30];
+        int stating_bid, direct_sell_price;
+        if (sscanf(req, "ITEMADD %s %d %d", item_name, &stating_bid, &direct_sell_price) != 3)
         {
-            return send_msg(conn_sock, 221);
+            return send_msg(sess_store[sesit].conn_sock, 300);
         }
-        else
+        switch (addItem(item_name, stating_bid, direct_sell_price, roomstore, sess_store[sesit], sesit))
         {
-            return send_msg(conn_sock, 120);
+        case 0:
+            return send_msg(sess_store[sesit].conn_sock, ADDITEMOK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, NOTINROOM);
         }
     }
 
     else if (strcmp(cmd, "BYE") == 0)
     {
-        if (sess->is_loggedin== 1)
-        {
-            sess->is_loggedin= 0;
-            return send_msg(conn_sock, 130);
-        }
-        else
-        {
-            return send_msg(conn_sock, 221);
-        }
+        return send_msg(sess_store[sesit].conn_sock, 300);
     }
     else
-        return send_msg(conn_sock, 300);
+        return send_msg(sess_store[sesit].conn_sock, 300);
 
     return 0;
 }

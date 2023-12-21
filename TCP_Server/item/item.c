@@ -47,12 +47,12 @@ int pop_item(item** queue){
    return delete_item(queue, (*queue)->name);
 }
 
-int addItem(char name[], int start_bid, int direct_sell_price, room* room_join, session sess, int sesit){
+int addItem(char name[], int start_bid, int direct_sell_price, room room_store[], session sess, int sesit){
     if(!sess.is_loggedin)
         return 1;
     if(sess.in_room == -1)
         return 2;
     item* new_item = create_item_node(name, sesit, start_bid, direct_sell_price);
-    push_item(&(room_join->item_queue), new_item);
+    push_item(&(room_store[sess.in_room].item_queue), new_item);
     return 0;
 }
