@@ -85,9 +85,11 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
     else if (strcmp(cmd, "ROOMCR") == 0)
     {
         char room_name[30];
-        sscanf(cmd, "ROOMCR %s", room_name);
-        if (strlen(room_name) <= 0)
+        sscanf(req, "ROOMCR %s", room_name);
+        if (strlen(room_name) <= 0){
+            printf("Not found Name\n");
             return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
+        }
 
         switch (create_room(roomstore, ROOM_NUM, room_name, sess_store[sesit]))
         {
@@ -112,8 +114,9 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
         char item_name[30];
         int stating_bid, direct_sell_price;
         if (sscanf(req, "ITEMADD %s %d %d", item_name, &stating_bid, &direct_sell_price) != 3)
-        {
-            return send_msg(sess_store[sesit].conn_sock, 300);
+        {   
+            printf("Agrument not enough\n");
+            return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
         }
         switch (addItem(item_name, stating_bid, direct_sell_price, roomstore, sess_store[sesit], sesit))
         {
@@ -123,6 +126,11 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
             return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:
             return send_msg(sess_store[sesit].conn_sock, NOTINROOM);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, ALREADYEXISTITEM);
+        default:
+            printf("It's a bug\n");
+            return send_msg(sess_store[sesit].conn_sock, 300);
         }
     }
 

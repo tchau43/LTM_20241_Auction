@@ -17,6 +17,7 @@
 #include "../msg/send_msg.h"
 #include "../session/session.h"
 #include "../room/room.h"
+#include "../val/global_var.h"
 
 #define BACKLOG 20
 #define BUFF_SIZE 1024
@@ -39,8 +40,8 @@ int main(int argc, char *argv[])
     socklen_t clilen;
     struct sockaddr_in cliaddr, servaddr;
 
-    room *room_store = (room *)malloc(sizeof(room) * ROOM_NUM);
-    session *sess_store = (session *)malloc(sizeof(session) * FD_SETSIZE);
+    room_store = (room *)malloc(sizeof(room) * ROOM_NUM);
+    sess_store = (session *)malloc(sizeof(session) * FD_SETSIZE);
 
     // Set listen socket for server
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)

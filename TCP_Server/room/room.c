@@ -43,7 +43,7 @@ int create_room(room roomlist[], int n, char name[], session sess)
         {
             roomlist[i].userNum = 0;
             strncpy(roomlist[i].name, name, 30);
-            printf("Create success\n");
+            printf("New room created\n");
             return 0;
         }
     }
