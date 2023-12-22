@@ -21,7 +21,6 @@
 
 #define BACKLOG 20
 #define BUFF_SIZE 1024
-#define ROOM_NUM 30
 
 int main(int argc, char *argv[])
 {
@@ -70,8 +69,8 @@ int main(int argc, char *argv[])
     }
 
     // Preset for client[] and readfds
-    init_session_store(sess_store, FD_SETSIZE);
-    init_roomlist(room_store, ROOM_NUM);
+    init_session_store();
+    init_room_store();
     maxfd = listenfd;
     maxi = -1;
     FD_ZERO(&allset);
@@ -98,7 +97,7 @@ int main(int argc, char *argv[])
             else
             {
                 printf("You got connection from %s\n", inet_ntoa(cliaddr.sin_addr));
-                int index = create_new_session(sess_store, FD_SETSIZE, connfd);
+                int index = create_new_session(connfd);
                 if (index < 0)
                 {
                     printf("Too many client\n");
@@ -137,7 +136,7 @@ int main(int argc, char *argv[])
             if (FD_ISSET(sockfd, &readfds))
             {
 
-                if (!msg_handle(sess_store, i, room_store))
+                if (!msg_handle(i))
                 {
                     FD_CLR(sockfd, &allset);
                     close(sockfd);
