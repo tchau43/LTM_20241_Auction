@@ -57,14 +57,14 @@ int find_item(item* queue, char item_name[]){
     return 0;
 }
 
-int addItem(char name[], int start_bid, int direct_sell_price, room room_store[], session sess, int sesit){
-    if(!sess.is_loggedin)
+int addItem(char name[], int start_bid, int direct_sell_price, int sesit){
+    if(!sess_store[sesit].is_loggedin)
         return 1;
-    if(sess.in_room == -1)
+    if(sess_store[sesit].in_room == -1)
         return 2;
-    if(find_item(room_store[sess.in_room].item_queue, name))
+    if(find_item(room_store[sess_store[sesit].in_room].item_queue, name))
         return 3;
     item* new_item = create_item_node(name, sesit, start_bid, direct_sell_price);
-    push_item(&(room_store[sess.in_room].item_queue), new_item);
+    push_item(&(room_store[sess_store[sesit].in_room].item_queue), new_item);
     return 0;
 }

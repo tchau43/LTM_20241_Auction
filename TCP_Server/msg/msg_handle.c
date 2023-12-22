@@ -27,9 +27,10 @@
  *          0 if get an error or connection close
  *
  */
-int msg_handle(session sess_store[], int sesit, room room_store[])
+int msg_handle(int sesit)
 {
-    char *req = (char *)malloc(BUFF_SIZE);
+    //sess[sesit].buff  luu request tach ra tu message
+    char *req = (char *)malloc(BUFF_SIZE);// Nhan tin nhan
     char tmp[BUFF_SIZE];
     memset(req, '\0', sizeof(req));
     memset(tmp, '\0', sizeof(tmp));
@@ -62,7 +63,7 @@ int msg_handle(session sess_store[], int sesit, room room_store[])
             printf("%d: %s\n", sess_store[sesit].conn_sock, sess_store[sesit].buff);
             if (strlen(sess_store[sesit].buff) == 0)
                 continue;
-            if (!request_handle(sess_store, sesit, room_store, sess_store[sesit].buff))
+            if (!request_handle(sesit, sess_store[sesit].buff))
             {
                 return 0;
             }

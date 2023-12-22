@@ -14,11 +14,9 @@
 #include "send_msg.h"
 #include "../room/room.h"
 #include "../item/item.h"
-
 #include "../val/response.h"
 
 #define BUFF_SIZE 1024
-#define ROOM_NUM 30
 
 /***
  * @function check_auth: Read the account information file and check the state of account
@@ -32,8 +30,9 @@
  *          WRONG_PASSWORD if input wrong password
 
  */
-enum AuthStatus{
-    LOGIN_SUCCESS, 
+enum AuthStatus
+{
+    LOGIN_SUCCESS,
     LG_USER_BLOCK,
     LG_USER_NOT_EXIST,
     INCORRECT_PASSWORD
@@ -47,15 +46,17 @@ enum AuthStatus check_auth(char *username, char *password)
     char check_password[1000];
     while (fgets(line, BUFF_SIZE, fp) != NULL)
     {
-        sscanf(line, "%s %d %s", check_name, &acc_state, &check_password);
+        sscanf(line, "%s %d %s", check_name, &acc_state, check_password);
         if (!strcmp(username, check_name))
         {
             if (acc_state)
             {
-                if(!strcmp(password, check_password)) {
+                if (!strcmp(password, check_password))
+                {
                     return LOGIN_SUCCESS;
                 }
-                else return INCORRECT_PASSWORD;
+                else
+                    return INCORRECT_PASSWORD;
             }
             else
             {
@@ -78,33 +79,33 @@ enum AuthStatus check_auth(char *username, char *password)
  *          0 if get an error
  */
 
-int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
+int request_handle(int sesit, char *req)
 {
     char cmd[10];
     sscanf(req, "%s", cmd);
     if (strcmp(cmd, "LOGIN") == 0)
     {
-        if (sess->is_loggedin== 1)
+        if (sess_store[sesit].is_loggedin == 1)
         {
-            send_msg(conn_sock, ALREADYLOGIN);
+            send_msg(sess_store[sesit].conn_sock, ALREADYLOGIN);
             return 1;
         }
         char username[1024];
         char password[1024];
         memset(username, '\0', sizeof(username));
-        sscanf(req, "USER %s PASSWORD %s", username,password);
-        
+        sscanf(req, "LOGIN %s %s", username, password);
+
         switch (check_auth(username, password))
         {
         case LOGIN_SUCCESS:
-            sess->is_loggedin= 1;
-            return send_msg(conn_sock, LOGINOK);
+            sess_store[sesit].is_loggedin = 1;
+            return send_msg(sess_store[sesit].conn_sock, LOGINOK);
         case LG_USER_BLOCK:
-            return send_msg(conn_sock, ACCBLOCK);
+            return send_msg(sess_store[sesit].conn_sock, ACCBLOCK);
         case INCORRECT_PASSWORD:
-            return send_msg(conn_sock, WRONG_PASSWORD);
+            return send_msg(sess_store[sesit].conn_sock, WRONG_PASSWORD);
         case LG_USER_NOT_EXIST:
-            return send_msg(conn_sock, UNAMENF);
+            return send_msg(sess_store[sesit].conn_sock, UNAMENF);
         default:
             break;
         }
@@ -112,16 +113,16 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
 
     else if (strcmp(cmd, "JOIN") == 0)
     {
-        
-        if (sess->is_loggedin== 0)
+
+        if (sess_store[sesit].is_loggedin == 0)
         {
-            return send_msg(conn_sock, NOTLOGIN);
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
         }
-      else
-      {
-            send_msg(conn_sock, JOINNOK);
+        else
+        {
+            send_msg(sess_store[sesit].conn_sock, JOINNOK);
             int room;
-      }
+        }
     }
 
     // Create Room Handle
@@ -129,12 +130,13 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
     {
         char room_name[30];
         sscanf(req, "ROOMCR %s", room_name);
-        if (strlen(room_name) <= 0){
+        if (strlen(room_name) <= 0)
+        {
             printf("Not found Name\n");
             return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
         }
 
-        switch (create_room(roomstore, ROOM_NUM, room_name, sess_store[sesit]))
+        switch (create_room(room_name, sess_store[sesit]))
         {
         case 0:
             return send_msg(sess_store[sesit].conn_sock, ROOMCROK);
@@ -152,11 +154,11 @@ int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
         char item_name[30];
         int stating_bid, direct_sell_price;
         if (sscanf(req, "ITEMADD %s %d %d", item_name, &stating_bid, &direct_sell_price) != 3)
-        {   
+        {
             printf("Agrument not enough\n");
             return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
         }
-        switch (addItem(item_name, stating_bid, direct_sell_price, roomstore, sess_store[sesit], sesit))
+        switch (addItem(item_name, stating_bid, direct_sell_price, sesit))
         {
 
         case 0:
