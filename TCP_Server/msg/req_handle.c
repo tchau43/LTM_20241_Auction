@@ -12,19 +12,25 @@
 
 #include "req_handle.h"
 #include "send_msg.h"
+#include "../room/room.h"
+#include "../item/item.h"
+
 #include "../val/response.h"
 
 #define BUFF_SIZE 1024
+#define ROOM_NUM 30
 
 /***
  * @function check_auth: Read the account information file and check the state of account
  *
  * @param username: a string to a input username
  *
+
  * @return: LOGIN_SUCCESS if success
  *          LG_USER_BLOCK if account is banned
  *          LG_USER_NOT_EXIST if account is not found
  *          WRONG_PASSWORD if input wrong password
+
  */
 enum AuthStatus{
     LOGIN_SUCCESS, 
@@ -67,12 +73,12 @@ enum AuthStatus check_auth(char *username, char *password)
  * @param conn_sock: a number of connected socket that use to send message
  * @param req: a string use to store request form client
  * @param login_state: a login state of session, 1 if logged in or 0 if not.
- * 
+ *
  * @return :1 if success
  *          0 if get an error
  */
 
-int request_handle(int conn_sock, char* req, session* sess)
+int request_handle(session sess_store[], int sesit, room roomstore[], char *req)
 {
     char cmd[10];
     sscanf(req, "%s", cmd);
@@ -104,35 +110,75 @@ int request_handle(int conn_sock, char* req, session* sess)
         }
     }
 
-    else if (strcmp(cmd, "JOIN_ROOM") == 0)
+    else if (strcmp(cmd, "JOIN") == 0)
     {
         
         if (sess->is_loggedin== 0)
         {
             return send_msg(conn_sock, NOTLOGIN);
         }
-        else
-        {
+      else
+      {
             send_msg(conn_sock, JOINNOK);
             int room;
-            
+      }
+    }
+
+    // Create Room Handle
+    else if (strcmp(cmd, "ROOMCR") == 0)
+    {
+        char room_name[30];
+        sscanf(req, "ROOMCR %s", room_name);
+        if (strlen(room_name) <= 0){
+            printf("Not found Name\n");
+            return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
+        }
+
+        switch (create_room(roomstore, ROOM_NUM, room_name, sess_store[sesit]))
+        {
+        case 0:
+            return send_msg(sess_store[sesit].conn_sock, ROOMCROK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, ROOMLFULL);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, ALREADYEXISTR);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+        }
+    }
+
+    else if (strcmp(cmd, "ITEMADD") == 0)
+    {
+        char item_name[30];
+        int stating_bid, direct_sell_price;
+        if (sscanf(req, "ITEMADD %s %d %d", item_name, &stating_bid, &direct_sell_price) != 3)
+        {   
+            printf("Agrument not enough\n");
+            return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
+        }
+        switch (addItem(item_name, stating_bid, direct_sell_price, roomstore, sess_store[sesit], sesit))
+        {
+
+        case 0:
+            return send_msg(sess_store[sesit].conn_sock, ADDITEMOK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, NOTINROOM);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, ALREADYEXISTITEM);
+        default:
+            printf("It's a bug\n");
+            return send_msg(sess_store[sesit].conn_sock, 300);
         }
     }
 
     else if (strcmp(cmd, "BYE") == 0)
     {
-        if (sess->is_loggedin== 1)
-        {
-            sess->is_loggedin= 0;
-            return send_msg(conn_sock, 130);
-        }
-        else
-        {
-            return send_msg(conn_sock, 221);
-        }
+        return send_msg(sess_store[sesit].conn_sock, 300);
     }
     else
-        return send_msg(conn_sock, 300);
+        return send_msg(sess_store[sesit].conn_sock, 300);
 
     return 0;
 }

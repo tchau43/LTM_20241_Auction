@@ -21,6 +21,6 @@ int delete_item(item** queue, char name[]);
  * @param queue: queue that use to get
  * @return : 1 if OK
 */
-int addItem(char name[], int start_bid, int direct_sell_price, room* room_join, session sess, int sesit);
+int addItem(char name[], int start_bid, int direct_sell_price, room room_store[], session sess, int sesit);
 
 #endif

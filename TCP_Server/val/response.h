@@ -28,7 +28,7 @@
 #define ROOMLFULL 2062 //  room list is full
 
 #define ADDITEMOK 1070 //  add success
-#define ITEMQFULL 2072 //  Waiting Room Full
+#define ALREADYEXISTITEM 2071 //  Already exist items
 
 #define RETRIEVEOK 1080 // : retrieve sucess
 #define ALREADYAUCITEM 2081 // : Item Already Auctioned

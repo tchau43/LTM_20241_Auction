@@ -2,7 +2,8 @@
 #define REQ_H_H
 
 #include "../model/session_model.h"
+#include "../model/room_model.h"
 
-int request_handle(int conn_sock, char* req, session* sess);
+int request_handle(session sess_store[], int sesit, room room_store[], char* req);
 
 #endif

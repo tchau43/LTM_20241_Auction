@@ -45,6 +45,7 @@ enum RoomStatus create_room(room roomlist[], int n, char name[], session sess)
             strncpy(roomlist[i].name, name, 30);
             printf("Create success\n");
             return ROOM_OK;
+
         }
     }
     return FULL_ROOM;
