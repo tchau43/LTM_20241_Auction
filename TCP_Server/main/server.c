@@ -15,9 +15,9 @@
 #include "../msg/req_handle.h"
 #include "../msg/msg_handle.h"
 #include "../msg/send_msg.h"
-#include "../model/session_model.h"
-#include "../model/room_model.h"
 #include "../session/session.h"
+#include "../room/room.h"
+#include "../val/global_var.h"
 
 #define BACKLOG 20
 #define BUFF_SIZE 1024
@@ -35,15 +35,13 @@ int main(int argc, char *argv[])
 
     // Prepare server resoucse
     int maxi, maxfd, listenfd, connfd, sockfd;
-    int nready, client[FD_SETSIZE];
+    int nready;
     fd_set readfds, allset;
-    int *login_state;
-    char **connBuff;
     socklen_t clilen;
     struct sockaddr_in cliaddr, servaddr;
 
-    room *room_store = (room *)malloc(sizeof(room) * ROOM_NUM);
-    session *sess_store = (session *)malloc(sizeof(session) * FD_SETSIZE);
+    room_store = (room *)malloc(sizeof(room) * ROOM_NUM);
+    sess_store = (session *)malloc(sizeof(session) * FD_SETSIZE);
 
     // Set listen socket for server
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -73,21 +71,11 @@ int main(int argc, char *argv[])
 
     // Preset for client[] and readfds
     init_session_store(sess_store, FD_SETSIZE);
+    init_roomlist(room_store, ROOM_NUM);
     maxfd = listenfd;
     maxi = -1;
-    for (int i = 0; i < FD_SETSIZE; i++)
-    {
-        client[i] = -1;
-    }
     FD_ZERO(&allset);
     FD_SET(listenfd, &allset);
-
-    // Set up buffer for connected sock, handle stream
-    connBuff = (char **)malloc(sizeof(char *) * FD_SETSIZE);
-    for (int i = 0; i < FD_SETSIZE; i++)
-    {
-        connBuff[i] = (char *)malloc(BUFF_SIZE);
-    }
 
     // Running server
     while (1)
@@ -149,7 +137,7 @@ int main(int argc, char *argv[])
             if (FD_ISSET(sockfd, &readfds))
             {
 
-                if (!msg_handle(sockfd, &(sess_store[i])))
+                if (!msg_handle(sess_store, i, room_store))
                 {
                     FD_CLR(sockfd, &allset);
                     close(sockfd);
@@ -161,14 +149,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Free connected sock's BUFFER
-    for (int i = 0; i < FD_SETSIZE; i++)
-    {
-        free(connBuff + i);
-        free(sess_store + i);
-    }
+
     free(sess_store);
-    free(login_state);
-    free(connBuff);
+    free(room_store);
     return 0;
 }

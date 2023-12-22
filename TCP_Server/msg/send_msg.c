@@ -30,7 +30,7 @@ int send_msg(int sockfd, int res_code)
     memset(buff, '\0', sizeof(buff));
     sprintf(buff, "%d", res_code);
 
-    sent_bytes = send(sockfd, &buff, 3, 0);
+    sent_bytes = send(sockfd, &buff, 4, 0);
     if (sent_bytes < 0)
     {
         perror("\nError6:");
