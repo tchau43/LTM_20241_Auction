@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -W
+CFLAGS = -W -pthread
 
 SERVER_SRC_DIR = TCP_Server
 SERVER_SRCS = $(wildcard $(SERVER_SRC_DIR)/*/*.c)

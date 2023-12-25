@@ -15,6 +15,7 @@
 #include "../room/room.h"
 #include "../item/item.h"
 #include "../val/response.h"
+#include "../bid/bid.h"
 
 #define BUFF_SIZE 1024
 
@@ -175,6 +176,45 @@ int request_handle(int sesit, char *req)
         }
     }
 
+    else if (strcmp(cmd, "BID") == 0)
+    {
+        int bid;
+        sscanf(req, "BID %d", &bid);
+        switch (bidding(sesit, bid))
+        {
+        case 0:
+            return send_msg(sess_store[sesit].conn_sock, BIDOK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, NOTINROOM);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, NOITEM);
+        case 4:
+            return send_msg(sess_store[sesit].conn_sock, NOTHIGHER);
+        default:
+            printf("It's a bug\n");
+            return send_msg(sess_store[sesit].conn_sock, 300);
+        }
+    }
+
+    else if (strcmp(cmd, "BUYNOW") == 0)
+    {
+        switch (buynow(sesit))
+        {
+        case 0:
+            return send_msg(sess_store[sesit].conn_sock, BUYOK);
+        case 1:
+            return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 2:
+            return send_msg(sess_store[sesit].conn_sock, NOTINROOM);
+        case 3:
+            return send_msg(sess_store[sesit].conn_sock, NOITEM);
+        default:
+            printf("It's a bug\n");
+            return send_msg(sess_store[sesit].conn_sock, 300);
+        }
+    }
     else if (strcmp(cmd, "BYE") == 0)
     {
         return send_msg(sess_store[sesit].conn_sock, 300);
