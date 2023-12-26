@@ -3,6 +3,5 @@
 
 pthread_mutex_t room_mutex;
 
-
 session* sess_store;
 room* room_store;
