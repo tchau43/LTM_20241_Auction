@@ -2,6 +2,7 @@
     "files.associations": {
         "string.h": "c",
         "stdlib.h": "c",
-        "global_var.h": "c"
+        "global_var.h": "c",
+        "room.h": "c"
     }
 }
