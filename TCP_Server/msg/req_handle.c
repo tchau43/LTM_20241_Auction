@@ -67,24 +67,31 @@ enum AuthStatus check_auth(char *username, char *password)
     fclose(fp);
     return LG_USER_NOT_EXIST;
 }
-int check_account_exist(char *username){
+int check_account_exist(char *username)
+{
     FILE *fp = fopen("account.txt", "r");
     char line[BUFF_SIZE];
     char check_name[1000];
-    while (fgets(line, BUFF_SIZE, fp) != NULL) 
+    while (fgets(line, BUFF_SIZE, fp) != NULL)
     {
         sscanf(line, "%s", check_name);
-        if (!strcmp(username, check_name)) return 1;
+        if (!strcmp(username, check_name))
+            return 1;
     }
     fclose(fp);
     return 0;
 }
-int signup_handle(char *username, char *password) {
-    if (check_account_exist(username)) {
+int signup_handle(char *username, char *password)
+{
+    if (check_account_exist(username))
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         FILE *fp = fopen("account.txt", "a");
-        if (fp == NULL) {
+        if (fp == NULL)
+        {
             perror("Error opening file");
             return -1; // Return an error code
         }
@@ -125,17 +132,22 @@ int request_handle(int sesit, char *req)
         case LOGIN_SUCCESS:
             sess_store[sesit].is_loggedin = 1;
             return send_msg(sess_store[sesit].conn_sock, LOGINOK);
+            break;
         case LG_USER_BLOCK:
             return send_msg(sess_store[sesit].conn_sock, ACCBLOCK);
+            break;
         case INCORRECT_PASSWORD:
             return send_msg(sess_store[sesit].conn_sock, WRONG_PASSWORD);
+            break;
         case LG_USER_NOT_EXIST:
             return send_msg(sess_store[sesit].conn_sock, UNAMENF);
+            break;
         default:
             break;
         }
     }
-    else if (strcmp(cmd, "SIGNUP") == 0){
+    else if (strcmp(cmd, "SIGNUP") == 0)
+    {
         if (sess_store[sesit].is_loggedin == 1)
         {
             send_msg(sess_store[sesit].conn_sock, ALREADYLOGIN);
@@ -145,12 +157,11 @@ int request_handle(int sesit, char *req)
         char password[1024];
         memset(username, '\0', sizeof(username));
         sscanf(req, "SIGNUP %s %s", username, password);
-        if (signup_handle(username,password)){
+        if (signup_handle(username, password))
+        {
             return send_msg(sess_store[sesit].conn_sock, SIGNUPSUCESS);
         }
         return send_msg(sess_store[sesit].conn_sock, SIGNUPFAIL);
-        
-
     }
     else if (strcmp(cmd, "JOIN") == 0)
     {
@@ -161,8 +172,30 @@ int request_handle(int sesit, char *req)
         }
         else
         {
-            send_msg(sess_store[sesit].conn_sock, JOINNOK);
             char room_name[1024];
+            memset(room_name, '\0', sizeof(room_name));
+            sscanf(req, "JOIN %s", room_name);
+            switch (join_room(room_name, sesit))
+            {
+            case USER_NOT_LOGINED_IN:
+                return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
+                break;
+            case ALREADY_IN_ROOM:
+                return send_msg(sess_store[sesit].conn_sock, ALREADYINROOM);
+                break;
+            case ROOM_NOT_FOUND:
+                return send_msg(sess_store[sesit].conn_sock, ROOMNE);
+                break;
+            case FULL_ROOM: 
+                return send_msg(sess_store[sesit].conn_sock, ROOMF);
+                break;
+            case ROOM_OK: 
+                return send_msg(sess_store[sesit].conn_sock, JOINNOK);
+                break;
+            default: 
+                return send_msg(sess_store[sesit].conn_sock, SYNTAXERR);
+                break;
+            }
         }
     }
 
@@ -189,8 +222,9 @@ int request_handle(int sesit, char *req)
             return send_msg(sess_store[sesit].conn_sock, NOTLOGIN);
         }
     }
-    else if (strcmp(cmd, "ROOML")){
-        return send_roomlist(sess_store[sesit].conn_sock, room_store, ROOM_NUM);
+    else if (strcmp(cmd, "ROOML"))
+    {
+        send_roomlist(sess_store[sesit].conn_sock, room_store, ROOM_NUM);
     }
     else if (strcmp(cmd, "ITEMADD") == 0)
     {
