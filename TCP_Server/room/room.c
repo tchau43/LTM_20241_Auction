@@ -35,7 +35,7 @@ enum RoomStatus create_room(char name[], session sess)
     if (!sess.is_loggedin)
         return USER_NOT_LOGINED_IN;
     if (findRoom(name) != -1)
-        return ROOM_ALREADY_EXIST;
+        return ALREADY_IN_ROOM;
 
     for (int i = 0; i < ROOM_NUM; i++)
     {
@@ -60,7 +60,7 @@ enum RoomStatus join_room(char room_name[], int sesit)
 
     if (sess_store[sesit].in_room != -1)
     {
-        return ROOM_ALREADY_EXIST;
+        return ALREADY_IN_ROOM;
     }
 
     int it = findRoom(room_name);

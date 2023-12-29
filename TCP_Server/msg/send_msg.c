@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <errno.h>
-
+#include "../room/room.h"
 #define BUFF_SIZE 1024
 
 /**
@@ -38,4 +38,17 @@ int send_msg(int sockfd, int res_code)
     }
     printf("Sent: %s\n", buff);
     return 1;
+}
+
+void send_roomlist(int sockfd, room roomlist[], int n) {
+    struct iovec iov[2];
+
+    int room_count_buffer;
+    iov[0].iov_base = &room_count_buffer;
+    iov[0].iov_len = sizeof(int);
+
+    iov[1].iov_base = roomlist;
+    iov[1].iov_len = n * sizeof(room);
+
+    writev(sockfd, iov, 2);
 }
