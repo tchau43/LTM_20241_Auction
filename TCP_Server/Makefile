@@ -3,7 +3,7 @@ CFLAGS = -W -pthread
 
 SERVER_SRCS = $(wildcard */*.c)
 SERVER_OBJS = $(SERVER_SRCS:.c=.o)
-SERVER = server
+SERVER = ../server
 
 all: $(SERVER)
 

@@ -15,6 +15,7 @@ void init_room_store()
             room_store[i].userList[j] = -1;
         }
     }
+    strcpy(room_store[2].name, "test_room1\0");
     printf("Init room\n");
 }
 
@@ -45,7 +46,6 @@ enum RoomStatus create_room(char name[], session sess)
             strncpy(room_store[i].name, name, 30);
             printf("Create success\n");
             return ROOM_OK;
-
         }
     }
     return FULL_ROOM;

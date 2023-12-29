@@ -4,6 +4,7 @@
 #include <sys/select.h>
 
 #include "session.h"
+#include "../room/room.h" // test
 
 void init_session_store(){
     for(int i = 0; i<FD_SETSIZE; i++){
@@ -23,6 +24,7 @@ int create_new_session(int conn_sock){
             memset(sess_store[i].username, '\0', sizeof(sess_store[i].username));
             strcpy(sess_store[i].username, "user1"); // test
             memset(sess_store[i].buff, '\0', sizeof(sess_store[i].buff));
+            join_room("test_room1", i);
             printf("session %d\n", i);
             return i;
         }

@@ -42,8 +42,9 @@
 #define BUYOK 1100 //  Successful Buy
 
 #define SYNTAXERR 3000 //  Syntax error
-#define SOLDED 4091 //  Item sold, new item arrived
+#define SOLDED 4091 //  Item sold
 #define NEWBEST 4092 //  Best price is 
+#define NEWITEM 4093    // New item arrived
 /**
  * resolve a result code receive from server and print a message it meaning
  *

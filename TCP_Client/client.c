@@ -30,7 +30,7 @@ int conn_sock;
  * @param client_sock: a number of socket use to receive message
  *
  */
-void receive_msg(int conn_sock)
+int receive_msg(int conn_sock)
 {
     char res[RES_SIZE + 1];
     int received_bytes = recv(conn_sock, res, RES_SIZE, 0);
@@ -43,13 +43,36 @@ void receive_msg(int conn_sock)
     else
     {
         res[received_bytes] = '\0';
-        // res_code_resolver(atoi(res));
         printf("%s\n", res);
     }
+    return atoi(res);
 }
 
-void msg_signal_handle(int signal){
-    receive_msg(conn_sock);
+void msg_signal_handle(int signal)
+{
+    int res_code = receive_msg(conn_sock);
+    char res[BUFF_SIZE];
+    int received_bytes;
+    switch (res_code)
+    {
+    case NEWBEST:
+        received_bytes = recv(conn_sock, res, BUFF_SIZE, 0);
+        if (received_bytes < 0)
+            perror("\nError1: ");
+        else if (received_bytes == 0)
+        {
+            printf("Connection closed.\n");
+        }
+        else
+        {
+            res[received_bytes] = '\0';
+            printf("%s\n", res);
+        }
+        break;
+
+    default:
+        break;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -116,7 +139,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    //Set up signal driven io
+    // Set up signal driven io
     signal(SIGIO, msg_signal_handle);
     fcntl(conn_sock, F_SETOWN, getpid());
     int flags = fcntl(conn_sock, F_GETFL, 0);
@@ -132,8 +155,11 @@ int main(int argc, char *argv[])
         if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
             buff[strlen(buff) - 1] = '\0';
         strcat(buff, "\r\n");
-
         send_msg(conn_sock, buff);
+        while (getchar()!='\n')
+        {
+        }
+        
     }
     // Step 4: Close socket
     free(buff);

@@ -3,7 +3,7 @@ CFLAGS =
 
 CLIENT_SRCS = $(wildcard *.c)
 CLIENT_OBJS = $(CLIENT_SRCS:.c=.o)
-CLIENT = client
+CLIENT = ../client
 
 all: $(CLIENT)
 
