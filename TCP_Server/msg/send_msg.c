@@ -22,7 +22,7 @@
  *          0 if get an error
  */
 
-int send_msg(int sockfd, int res_code)
+int send_code(int sockfd, int res_code)
 {
     char buff[4];
     int sent_bytes, received_bytes;
@@ -31,6 +31,20 @@ int send_msg(int sockfd, int res_code)
     sprintf(buff, "%d", res_code);
 
     sent_bytes = send(sockfd, &buff, 4, 0);
+    if (sent_bytes < 0)
+    {
+        perror("\nError6:");
+        return 0;
+    }
+    printf("Sent: %s\n", buff);
+    return 1;
+}
+
+int send_msg(int sockfd, char *msg){
+    char buff[BUFF_SIZE];
+    strcpy(buff, msg);
+    strcat(buff, "\r\n\0");
+    int sent_bytes = send(sockfd, &buff, strlen(buff), 0);
     if (sent_bytes < 0)
     {
         perror("\nError6:");
@@ -52,3 +66,18 @@ void send_roomlist(int sockfd, room roomlist[], int n) {
 
     writev(sockfd, iov, 2);
 }
+
+// void recv_roomlist(int sockfd, room roomlist[], int *n) {
+//     struct iovec iov[2];
+
+//     int room_count_buffer;
+//     iov[0].iov_base = &room_count_buffer;
+//     iov[0].iov_len = sizeof(int);
+
+//     iov[1].iov_base = roomlist;
+//     iov[1].iov_len = *n * sizeof(room);
+
+//     readv(sockfd, iov, 2);
+
+//     *n = room_count_buffer;
+// }

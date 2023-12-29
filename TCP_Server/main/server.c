@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
                 else
                 {
                     FD_SET(connfd, &allset);
-                    if (!send_msg(connfd, 100))
+                    if (!send_code(connfd, 100))
                     {
                         FD_CLR(connfd, &allset);
                         close(connfd);

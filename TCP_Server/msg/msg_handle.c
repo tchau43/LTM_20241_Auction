@@ -77,18 +77,3 @@ int msg_handle(int sesit)
     free(req);
     return 1;
 }
-
-void recv_roomlist(int sockfd, room roomlist[], int *n) {
-    struct iovec iov[2];
-
-    int room_count_buffer;
-    iov[0].iov_base = &room_count_buffer;
-    iov[0].iov_len = sizeof(int);
-
-    iov[1].iov_base = roomlist;
-    iov[1].iov_len = *n * sizeof(room);
-
-    readv(sockfd, iov, 2);
-
-    *n = room_count_buffer;
-}
