@@ -17,7 +17,7 @@ int create_new_session(int conn_sock){
         if(sess_store[i].conn_sock <0){
             sess_store[i].conn_sock = conn_sock;
             sess_store[i].in_room = 2;
-            sess_store[i].is_loggedin = 1;
+            sess_store[i].is_loggedin = 0;
             memset(sess_store[i].username, '\0', sizeof(sess_store[i].username));
             memset(sess_store[i].buff, '\0', sizeof(sess_store[i].buff));
             printf("session %d\n", i);
