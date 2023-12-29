@@ -3,7 +3,11 @@
         "string.h": "c",
         "stdlib.h": "c",
         "global_var.h": "c",
+<<<<<<< HEAD
         "unistd.h": "c",
         "send_msg.h": "c"
+=======
+        "room.h": "c"
+>>>>>>> main
     }
 }

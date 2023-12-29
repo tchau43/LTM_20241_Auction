@@ -4,11 +4,14 @@
 #define CONNECTED 1000 //  connected
 
 #define LOGINOK 1010 //  login success
+#define SIGNUPSUCESS 1011 //signup sucess
+#define SIGNUPFAIL 2017 //signup fail
 #define UNAMENF 2011 //  usename not found
 #define WRONG_PASSWORD 2012 //  password wrong
 #define ALREADYLOGIN 2013 //  already login
 #define ACCLOGIN 2014 //  This account already login in other client
 #define ACCBLOCK 2015 // Account is blocked 
+#define ACCEXIST 2016 // Account is exist
 
 #define JOINNOK 1020 //  Join success
 #define NOTLOGIN 2021 //  Not logged in
