@@ -29,8 +29,8 @@
  */
 int msg_handle(int sesit)
 {
-    //sess[sesit].buff  luu request tach ra tu message
-    char *req = (char *)malloc(BUFF_SIZE);// Nhan tin nhan
+    // sess[sesit].buff  luu request tach ra tu message
+    char *req = (char *)malloc(BUFF_SIZE); // Nhan tin nhan
     char tmp[BUFF_SIZE];
     memset(req, '\0', sizeof(req));
     memset(tmp, '\0', sizeof(tmp));
@@ -61,12 +61,10 @@ int msg_handle(int sesit)
             int part2_n = strlen(part2);
             strncat(sess_store[sesit].buff, req, strlen(req) - part2_n);
             printf("%d: %s\n", sess_store[sesit].conn_sock, sess_store[sesit].buff);
-            if (strlen(sess_store[sesit].buff) == 0)
-                continue;
-            if (!request_handle(sesit, sess_store[sesit].buff))
-            {
-                return 0;
-            }
+                if (!request_handle(sesit, sess_store[sesit].buff))
+                {
+                    return 0;
+                }
             memset(sess_store[sesit].buff, '\0', sizeof(sess_store[sesit].buff));
             memset(tmp, '\0', sizeof(tmp));
             strcpy(tmp, part2 + 2);

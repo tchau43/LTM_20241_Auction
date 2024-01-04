@@ -42,13 +42,18 @@
 #define BUYOK 1100 //  Successful Buy
 
 #define SYNTAXERR 3000 //  Syntax error
-#define SOLDED 4091 //  Item sold
-#define NEWBEST 4092 //  Best price is 
-#define NEWITEM 4093    // New item arrived
+#define SOLDED 4001 //  Item sold
+#define NEWBID 4002 //  Best price is 
+#define COUNTDOWN 4003 // Countdown pharse
+#define NEWITEMARRIVED 4004 // New item arrived
 /**
  * resolve a result code receive from server and print a message it meaning
  *
  * @param res_code: result code receive from server
  */
 void res_code_resolver(int res_code);
+void new_bid_msg_resolver(char* msg);
+void new_item_msg_resolver(char* msg);
+void sold_msg_resolver(char* msg);
+void countdown_msg_resolver(char* msg);
 #endif

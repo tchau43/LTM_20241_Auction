@@ -15,7 +15,7 @@ void init_room_store()
             room_store[i].userList[j] = -1;
         }
     }
-    strcpy(room_store[2].name, "test_room1\0");
+    strcpy(room_store[2].name, "test_room1");
     printf("Init room\n");
 }
 
@@ -64,8 +64,10 @@ enum RoomStatus join_room(char room_name[], int sesit)
     }
 
     int it = findRoom(room_name);
-    if (it == -1)
+    if (it == -1){
+        printf("Room not found\n");
         return ROOM_NOT_FOUND;
+    }
 
     if (room_store[it].userNum == 3)
         return FULL_ROOM;

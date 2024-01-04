@@ -211,7 +211,7 @@ int request_handle(int sesit, char *req)
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         }
     }
-    else if (strcmp(cmd, "ROOML"))
+    else if (strcmp(cmd, "ROOML") == 0)
     {
         send_roomlist(sess_store[sesit].conn_sock, room_store, ROOM_NUM);
     }
@@ -224,10 +224,12 @@ int request_handle(int sesit, char *req)
             printf("Agrument not enough\n");
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
         }
+        printf("Item adding\n");
         switch (addItem(item_name, stating_bid, direct_sell_price, sesit))
         {
 
         case 0:
+            printf("Item added\n");
             return send_code(sess_store[sesit].conn_sock, ADDITEMOK);
         case 1:
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
@@ -248,7 +250,8 @@ int request_handle(int sesit, char *req)
         switch (bidding(sesit, bid))
         {
         case 0:
-            return send_code(sess_store[sesit].conn_sock, BIDOK);
+            // return send_code(sess_store[sesit].conn_sock, BIDOK);
+            return 1;
         case 1:
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:
@@ -268,7 +271,7 @@ int request_handle(int sesit, char *req)
         switch (buynow(sesit))
         {
         case 0:
-            return send_code(sess_store[sesit].conn_sock, BUYOK);
+            return 1;
         case 1:
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:

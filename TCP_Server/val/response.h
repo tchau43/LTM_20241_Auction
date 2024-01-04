@@ -45,7 +45,9 @@
 #define BUYOK 1100 //  Successful Buy
 
 #define SYNTAXERR 3000 //  Syntax error
-#define SOLDED 4091 //  Item sold, new item arrived
-#define NEWBEST 4092 //  Best price is 
+#define SOLDED 4001 //  Item sold
+#define NEWBID 4002 //  Best price is 
+#define COUNTDOWN 4003 // Countdown pharse
+#define NEWITEMARRIVED 4004 // New item arrived
 
 #endif
