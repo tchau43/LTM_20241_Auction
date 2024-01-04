@@ -43,6 +43,7 @@ int send_msg(int sockfd, int res_code)
 void send_roomlist(int sockfd, room roomlist[], int n) {
     struct iovec iov[2];
 
+<<<<<<< Updated upstream
     int room_count_buffer;
     iov[0].iov_base = &room_count_buffer;
     iov[0].iov_len = sizeof(int);
@@ -52,3 +53,16 @@ void send_roomlist(int sockfd, room roomlist[], int n) {
 
     writev(sockfd, iov, 2);
 }
+=======
+    room_data roomInfoList[n];
+    for (int i = 0; i < n; i++) {
+        strncpy(roomInfoList[i].name, roomlist[i].name, 1024);
+        roomInfoList[i].userNum = roomlist[i].userNum;
+    }
+
+    iov[0].iov_base = roomInfoList;
+    iov[0].iov_len = n * sizeof(room_data);
+
+    writev(sockfd, iov, 1);
+}
+>>>>>>> Stashed changes

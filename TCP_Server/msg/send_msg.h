@@ -12,4 +12,11 @@
  */
 int send_msg(int sockfd, int res_code);
 
+<<<<<<< Updated upstream
+=======
+int send_msg(int conn_sock, char *msg);
+
+void send_roomlist(int sockfd, room roomlist[], int n);
+
+>>>>>>> Stashed changes
 #endif

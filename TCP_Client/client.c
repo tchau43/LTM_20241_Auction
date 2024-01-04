@@ -70,8 +70,33 @@ void res_code_resolver(int res_code)
  * @param client_sock: a number of socket use to receive message
  *
  */
+<<<<<<< Updated upstream
 
 void receive_msg(int conn_sock)
+=======
+typedef struct room_data {
+    char name[1024];
+    int userNum;
+} room_data;
+
+
+void recv_roomlist(int sockfd, room_data roomlist[], int *n) {
+    struct iovec iov[2];
+
+    int room_count_buffer;
+    iov[0].iov_base = &room_count_buffer;
+    iov[0].iov_len = sizeof(int);
+
+    iov[1].iov_base = roomlist;
+    iov[1].iov_len = *n * sizeof(room_data);
+
+    readv(sockfd, iov, 2);
+
+    *n = room_count_buffer;
+}
+
+int receive_msg(int conn_sock)
+>>>>>>> Stashed changes
 {
     char res[RES_SIZE + 1];
     int received_bytes = recv(conn_sock, res, RES_SIZE, 0);
