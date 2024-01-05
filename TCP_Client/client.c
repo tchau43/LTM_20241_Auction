@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <pthread.h>
 
 #include "response.h"
 #include "send_msg.h"
@@ -33,70 +34,87 @@ int conn_sock;
 int receive_code(int conn_sock)
 {
     char res[CODE_SIZE + 1];
-    int received_bytes = recv(conn_sock, res, CODE_SIZE, 0);
-    if (received_bytes < 0)
-        perror("\nError1: ");
-    else if (received_bytes == 0)
+    int received_bytes;
+    while (1)
     {
-        printf("Connection closed.\n");
-    }
-    else
-    {
-        res[received_bytes] = '\0';
-        printf("%s\n", res);
-    }
-    return atoi(res);
-}
-
-char* receive_anno(int conn_sock, int anno_type){
-    char* msg = (char*)malloc(BUFF_SIZE);
-    int received_bytes = recv(conn_sock, msg, BUFF_SIZE, 0);
+        received_bytes = recv(conn_sock, res, CODE_SIZE, 0);
         if (received_bytes < 0)
-            perror("\nError2: ");
+            perror("\nError1: ");
         else if (received_bytes == 0)
         {
             printf("Connection closed.\n");
+            exit(1);
         }
         else
-        {
-            msg[received_bytes] = '\0';
-            switch (anno_type)
-            {
-            case NEWBID:
-                new_bid_msg_resolver(msg);
-                break;
-            case SOLDED:
-                sold_msg_resolver(msg);
-                break;
-            case NEWITEMARRIVED:
-                new_item_msg_resolver(msg);
-                break;
-            case COUNTDOWN:
-                countdown_msg_resolver(msg);
-                break;
-            default:
-                printf("Empty announcement\n");
-                break;
-            }
-        }
+            break;
+    }
+    res[received_bytes] = '\0';
+    printf("%s\n", res);
+    return atoi(res);
 }
 
-void msg_signal_handle(int signal)
+int receive_anno(int conn_sock, int anno_type)
 {
-    int res_code = receive_code(conn_sock);
-    char res[BUFF_SIZE];
-    int received_bytes;
-    switch (res_code)
+    char *msg = (char *)malloc(BUFF_SIZE);
+    int received_bytes = recv(conn_sock, msg, BUFF_SIZE, 0);
+    if (received_bytes < 0)
     {
-    case NEWBID:
-    case NEWITEMARRIVED:
-    case SOLDED:
-    case COUNTDOWN:
-        receive_anno(conn_sock, res_code);
-        break;
-    default:
-        res_code_resolver(res_code);
-        break;
+        perror("\nError2: ");
+        return 1;
+    }
+    else if (received_bytes == 0)
+    {
+        printf("Connection closed.\n");
+        exit(0);
+    }
+    else
+    {
+        msg[received_bytes] = '\0';
+        switch (anno_type)
+        {
+        case NEWBID:
+            new_bid_msg_resolver(msg);
+            break;
+        case SOLDED:
+            sold_msg_resolver(msg);
+            break;
+        case NEWITEMARRIVED:
+            new_item_msg_resolver(msg);
+            break;
+        case COUNTDOWN:
+            countdown_msg_resolver(msg);
+            break;
+        default:
+            printf("Empty announcement\n");
+            break;
+        }
+        return 0;
+    }
+    return 0;
+}
+
+void *msg_signal_handle(void *param)
+{
+    pthread_detach(pthread_self());
+    while (1)
+    {
+        int res_code = receive_code(conn_sock);
+        char res[BUFF_SIZE];
+        int received_bytes;
+        switch (res_code)
+        {
+        case NEWBID:
+        case NEWITEMARRIVED:
+        case SOLDED:
+        case COUNTDOWN:
+            if (receive_anno(conn_sock, res_code) != 1)
+                ;
+            break;
+            break;
+        default:
+            res_code_resolver(res_code);
+            break;
+        }
     }
 }
 
@@ -164,12 +182,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Set up signal driven io
-    signal(SIGIO, msg_signal_handle);
-    fcntl(conn_sock, F_SETOWN, getpid());
-    int flags = fcntl(conn_sock, F_GETFL, 0);
-    fcntl(conn_sock, F_SETFL, flags | O_ASYNC | O_NONBLOCK);
-
+    // Set up hearing thread
+    pthread_t hear_thread;
+    pthread_create(&hear_thread, NULL, &msg_signal_handle, NULL);
     // Communicate with sever
     while (1)
     {
@@ -181,11 +196,12 @@ int main(int argc, char *argv[])
             buff[strlen(buff) - 1] = '\0';
         strcat(buff, "\r\n");
         send_msg(conn_sock, buff);
-        while (getchar()!='\n')
+        while (getchar() != '\n')
         {
         }
     }
     // Step 4: Close socket
+    pthread_cancel(hear_thread);
     free(buff);
     close(conn_sock);
     return 0;
