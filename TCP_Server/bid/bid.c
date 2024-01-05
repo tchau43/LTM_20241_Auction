@@ -15,7 +15,7 @@
 void room_anno(int room_it, char *msg, int anno_type);
 
 void *auction_start(void *roomit)
-{   
+{
     pthread_detach(pthread_self());
     int it = *((int *)roomit);
     char new_item_msg[BUFF_SIZE];
@@ -29,13 +29,13 @@ void *auction_start(void *roomit)
     sleep(EXTENDSTIME);
     printf("Auction pharse start for %s\n", (room_store[it].item_queue)->name);
     for (int i = 0; i < 3; i++)
-    {   
+    {
         char cd_msg[BUFF_SIZE];
         sprintf(cd_msg, "%s %s %d %d",
                 room_store[it].name,
                 room_store[it].item_queue->name,
                 room_store[it].item_queue->current_bid,
-                i+1);
+                i + 1);
         room_anno(it, cd_msg, COUNTDOWN);
         sleep(EXTENDSTIME2);
         // printf("%s : %d\n", (room_store[it].item_queue)->name, (room_store[it].item_queue)->current_bid);
@@ -115,17 +115,19 @@ int buynow(int sesit)
     if (room_store[sess_store[sesit].in_room].item_queue == NULL)
         return 3;
     pthread_cancel(room_store[sess_store[sesit].in_room].time_counter);
-    printf("Item sold to %s\n", sess_store[sesit].username);
-    pop_item(&(room_store[sess_store[sesit].in_room].item_queue));
-    if (room_store[sess_store[sesit].in_room].item_queue != NULL)
-        start_auction(sess_store[sesit].in_room);
-    send_code(sess_store[sesit].conn_sock, BUYOK);
     char sold_msg[BUFF_SIZE];
     sprintf(sold_msg, "%s %s %s",
             room_store[sess_store[sesit].in_room].name,
             sess_store[sesit].username,
             room_store[sess_store[sesit].in_room].item_queue->name);
     room_anno(sess_store[sesit].in_room, sold_msg, SOLDED);
+    
+    printf("Item sold to %s\n", sess_store[sesit].username);
+    pop_item(&(room_store[sess_store[sesit].in_room].item_queue));
+    if (room_store[sess_store[sesit].in_room].item_queue != NULL)
+        start_auction(sess_store[sesit].in_room);
+    send_code(sess_store[sesit].conn_sock, BUYOK);
+
     return 0;
 }
 
