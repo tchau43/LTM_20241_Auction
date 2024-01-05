@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =
+CFLAGS = -pthread
 
 CLIENT_SRCS = $(wildcard *.c)
 CLIENT_OBJS = $(CLIENT_SRCS:.c=.o)
