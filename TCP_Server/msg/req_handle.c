@@ -67,8 +67,6 @@ int request_handle(int sesit, char *req)
         case LOGIN_SUCCESS:
             sess_store[sesit].is_loggedin = 1;
             return send_code(sess_store[sesit].conn_sock, LOGINOK);
-        case LG_USER_BLOCK:
-            return send_code(sess_store[sesit].conn_sock, ACCBLOCK);
         case INCORRECT_PASSWORD:
             return send_code(sess_store[sesit].conn_sock, WRONG_PASSWORD);
         case LG_USER_NOT_EXIST:

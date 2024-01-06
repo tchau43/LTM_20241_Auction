@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<string.h>
-#include"auth_handle.h"
+#include <stdio.h>
+#include <string.h>
+#include "auth_handle.h"
 #define BUFF_SIZE 1024
 
 enum AuthStatus login_handle(char *username, char *password)
@@ -12,26 +12,19 @@ enum AuthStatus login_handle(char *username, char *password)
     char check_password[1000];
     while (fgets(line, BUFF_SIZE, fp) != NULL)
     {
-        sscanf(line, "%s %d %s", check_name, &acc_state, check_password);
+        sscanf(line, "%s %s", check_name, check_password);
         if (!strcmp(username, check_name))
         {
-            if (acc_state)
+            if (!strcmp(password, check_password))
             {
-                if (!strcmp(password, check_password))
-                {
-                    return LOGIN_SUCCESS;
-                }
-                else
-                    return INCORRECT_PASSWORD;
+                return LOGIN_SUCCESS;
             }
             else
-            {
-                return LG_USER_BLOCK;
-            }
+                return INCORRECT_PASSWORD;
         }
+        fclose(fp);
+        return LG_USER_NOT_EXIST;
     }
-    fclose(fp);
-    return LG_USER_NOT_EXIST;
 }
 // void logout_handle(){
 
@@ -66,7 +59,7 @@ int signup_handle(char *username, char *password)
             return -1; // Return an error code
         }
 
-        fprintf(fp, "%s 1 %s\n", username, password);
+        fprintf(fp, "%s %s\n", username, password);
         fclose(fp);
         return 1;
     }

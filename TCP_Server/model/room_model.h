@@ -13,10 +13,7 @@ typedef struct room{
     item* item_queue;
     pthread_t time_counter;
 }room;
-typedef struct room_data {
-    char name[ROOM_NAME_MAX_LENGTH];
-    int userNum;
-} room_data;
+
 
 
 #endif
