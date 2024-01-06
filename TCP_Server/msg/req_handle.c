@@ -66,7 +66,10 @@ int request_handle(int sesit, char *req)
         {
         case LOGIN_SUCCESS:
             sess_store[sesit].is_loggedin = 1;
+            strcpy(sess_store[sesit].username,username);
             return send_code(sess_store[sesit].conn_sock, LOGINOK);
+        case LG_OTHER_CLIENT: 
+            return send_code(sess_store[sesit].conn_sock, ACCLOGIN);
         case INCORRECT_PASSWORD:
             return send_code(sess_store[sesit].conn_sock, WRONG_PASSWORD);
         case LG_USER_NOT_EXIST:
@@ -147,6 +150,16 @@ int request_handle(int sesit, char *req)
     {
         send_roomlist(sess_store[sesit].conn_sock, room_store, ROOM_NUM);
     }
+    else if (strcmp(cmd, "OUTROOM") == 0) {
+        switch (out_room(sesit)){
+            case 1:
+                return send_code(sess_store[sesit].conn_sock, OUTOK);
+            case 2:
+                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+            case 3:
+                return send_code(sess_store[sesit].conn_sock, NOTINROOM);
+        }
+    }
     else if (strcmp(cmd, "ITEMADD") == 0)
     {
         char item_name[30];
@@ -215,9 +228,12 @@ int request_handle(int sesit, char *req)
             return send_code(sess_store[sesit].conn_sock, 300);
         }
     }
-    else if (strcmp(cmd, "BYE") == 0)
+    else if (strcmp(cmd, "LOGOUT") == 0)
     {
-        return send_code(sess_store[sesit].conn_sock, 300);
+        if (!sess_store[sesit].is_loggedin) return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        sess_store[sesit].username[0] = '\0';
+        sess_store[sesit].is_loggedin = 0;
+        return send_code(sess_store[sesit].conn_sock, LOGOUTOK);
     }
     else
         return send_code(sess_store[sesit].conn_sock, 300);

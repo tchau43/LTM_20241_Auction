@@ -3,3 +3,4 @@ tungbt	hn1l
 ductq	hn1l
 truongys	hn1l
 quyld 20
+ductq1 hn1l
