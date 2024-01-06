@@ -7,7 +7,8 @@
 void init_room_store()
 {
     for (int i = 0; i < ROOM_NUM; i++)
-    {
+    {   
+        memset(room_store[i].name, '\0', ROOM_NAME_MAX_LENGTH);
         room_store[i].item_queue = NULL;
         room_store[i].userNum = -1;
         for (int j = 0; j < 30; j++)
@@ -15,7 +16,6 @@ void init_room_store()
             room_store[i].userList[j] = -1;
         }
     }
-    strcpy(room_store[2].name, "test_room1");
     printf("Init room\n");
 }
 
