@@ -18,13 +18,4 @@ typedef struct room{
     pthread_t time_counter;
 }room;
 
-/**
- * Struct of data that use to send roomlist
-*/
-typedef struct room_data {
-    char name[ROOM_NAME_MAX_LENGTH];
-    int userNum;
-} room_data;
-
-
 #endif

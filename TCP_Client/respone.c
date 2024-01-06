@@ -59,7 +59,6 @@ void res_code_resolver(int res_code)
     case ALREADYINROOM:
         printf("You are already in room\n");
         break;
-    
 
     // For add item
     case ADDITEMOK:

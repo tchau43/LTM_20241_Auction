@@ -4,7 +4,8 @@ enum AuthStatus
     LOGIN_SUCCESS,
     LG_USER_BLOCK,
     LG_USER_NOT_EXIST,
-    INCORRECT_PASSWORD
+    INCORRECT_PASSWORD,
+    LG_OTHER_CLIENT,
 };
 
 /**
@@ -18,9 +19,7 @@ enum AuthStatus
  *          LG_USER_NOT_EXIST if account is not found
  *          WRONG_PASSWORD if input wrong password
  */
-enum AuthStatus login_handle();
-
-
+enum AuthStatus login_handle(char *username, char *password);
 int check_account_exist();
 // void logout_handle();
 int signup_handle();

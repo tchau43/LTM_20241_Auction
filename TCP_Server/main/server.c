@@ -140,14 +140,16 @@ int main(int argc, char *argv[])
                 {
                     FD_CLR(sockfd, &allset);
                     close(sockfd);
+                    out_room(i);
                     sess_store[i].conn_sock = -1;
+                    sess_store[i].username[0] = '\0';
+                    sess_store[i].is_loggedin = 0;
                 }
                 if (--nready <= 0)
                     break;
             }
         }
     }
-
 
     free(sess_store);
     free(room_store);

@@ -46,5 +46,5 @@ enum RoomStatus create_room(char name[], session sess);
  *          4 if room is not found
  */
 enum RoomStatus join_room(char room_name[], int sesit);
-
+int out_room(int sesit);
 #endif

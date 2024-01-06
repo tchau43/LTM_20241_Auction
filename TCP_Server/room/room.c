@@ -94,3 +94,21 @@ enum RoomStatus join_room(char room_name[], int sesit)
 
     return UNIDENTIFIED;
 }
+
+int out_room(int sesit){
+    if (!sess_store[sesit].is_loggedin)
+        return 2; // accout not login
+    if (sess_store[sesit].in_room == -1)
+        return 3; // account not in room
+    room_store[sess_store[sesit].in_room].userNum--;
+    for (int i = 0; i < 3; i++)
+    {
+        if(room_store[sess_store[sesit].in_room].userList[i] == sesit) {
+            room_store[sess_store[sesit].in_room].userList[i] == -1;
+            break;
+        }
+    }
+    sess_store[sesit].in_room = -1;
+    return 1; // account out room success
+    
+}

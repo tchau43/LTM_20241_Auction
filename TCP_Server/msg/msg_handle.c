@@ -50,9 +50,12 @@ int msg_handle(int sesit)
             int part2_n = strlen(part2);
             strncat(sess_store[sesit].buff, req, strlen(req) - part2_n);
             printf("%d: %s\n", sess_store[sesit].conn_sock, sess_store[sesit].buff);
-            if (!request_handle(sesit, sess_store[sesit].buff))
+            if (strlen(sess_store[sesit].buff) > 0)
             {
-                return 0;
+                if (!request_handle(sesit, sess_store[sesit].buff))
+                {
+                    return 0;
+                }
             }
             memset(sess_store[sesit].buff, '\0', sizeof(sess_store[sesit].buff));
             memset(tmp, '\0', sizeof(tmp));
