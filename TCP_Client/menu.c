@@ -78,3 +78,12 @@ void auth_menu()
     printf("4. Exit\n");
     printf("Enter your command from 1 to 3:");
 }
+
+void main_menu(){
+    printf("---------------------------------------------\n");
+    printf("Welcome us");
+}
+
+void inroom_menu(){
+    
+}

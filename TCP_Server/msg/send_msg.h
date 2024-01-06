@@ -13,4 +13,7 @@
 int send_code(int sockfd, int res_code);
 
 int send_msg(int conn_sock, char *msg);
+
+void send_roomlist(int sockfd, room roomlist[], int n);
+
 #endif
