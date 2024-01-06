@@ -34,14 +34,17 @@ void *auction_start(void *roomit)
     printf("Room %d: %s start auction\n", it, (room_store[it].item_queue)->name);
 
     // Send annocement to all user in room
-    char new_item_msg[BUFF_SIZE];
-    sprintf(new_item_msg, "%d %s %s %d %d",
-            NEWITEMARRIVED,
-            room_store[it].name,
-            room_store[it].item_queue->name,
-            room_store[it].item_queue->current_bid,
-            room_store[it].item_queue->direct_sell_price);
-    room_anno(it, new_item_msg);
+    // if (room_store[it].item_queue->best_cus == -1)
+    // {
+        char new_item_msg[BUFF_SIZE];
+        sprintf(new_item_msg, "%d %s %s %d %d",
+                NEWITEMARRIVED,
+                room_store[it].name,
+                room_store[it].item_queue->name,
+                room_store[it].item_queue->current_bid,
+                room_store[it].item_queue->direct_sell_price);
+        room_anno(it, new_item_msg);
+    // }
 
     // Start time counter
     sleep(EXTENDSTIME);

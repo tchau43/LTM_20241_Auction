@@ -110,9 +110,15 @@ int addItem(char name[], int start_bid, int direct_sell_price, int sesit)
         return 1;
     if (sess_store[sesit].in_room == -1)
         return 2;
+    printf("Item adding\n");
+    
     if (find_item(room_store[sess_store[sesit].in_room].item_queue, name))
         return 3;
+    printf("Item adding\n");
+    
     item *new_item = create_item_node(name, sesit, start_bid, direct_sell_price);
+    printf("Item adding\n");
+
     pthread_mutex_lock(&room_mutex);
     push_item(&(room_store[sess_store[sesit].in_room].item_queue), new_item);
     pthread_mutex_unlock(&room_mutex);

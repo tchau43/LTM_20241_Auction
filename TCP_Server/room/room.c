@@ -77,10 +77,10 @@ enum RoomStatus join_room(char room_name[], int sesit)
         return ROOM_NOT_FOUND;
     }
 
-    if (room_store[it].userNum == 3)
+    if (room_store[it].userNum == ROOM_NUM)
         return FULL_ROOM;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < ROOM_NUM; i++)
     {
         if (room_store[it].userList[i] == -1)
         {
@@ -101,10 +101,10 @@ int out_room(int sesit){
     if (sess_store[sesit].in_room == -1)
         return 3; // account not in room
     room_store[sess_store[sesit].in_room].userNum--;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < ROOM_NUM; i++)
     {
         if(room_store[sess_store[sesit].in_room].userList[i] == sesit) {
-            room_store[sess_store[sesit].in_room].userList[i] == -1;
+            room_store[sess_store[sesit].in_room].userList[i] = -1;
             break;
         }
     }
