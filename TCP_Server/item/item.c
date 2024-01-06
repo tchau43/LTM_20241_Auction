@@ -7,14 +7,14 @@
 
 /***
  * Create new item node for item queue
- * 
+ *
  * @param name: name of item
  * @param owner: session index of client
  * @param start_bid: starting price
  * @param direct_sell_price: buyout price
- * 
+ *
  * @return :pointer of item node
-*/
+ */
 item *create_item_node(char name[], int owner, int start_bid, int direct_sell_price)
 {
     item *node = (item *)malloc(sizeof(item));
@@ -29,10 +29,10 @@ item *create_item_node(char name[], int owner, int start_bid, int direct_sell_pr
 
 /**
  * push item to item queue
- * 
+ *
  * @param queue: item queue
  * @param it: pointer of item
-*/
+ */
 void push_item(item **queue, item *it)
 {
     if (*queue == NULL)
@@ -47,12 +47,12 @@ void push_item(item **queue, item *it)
 
 /**
  * Delete item from queue
- * 
+ *
  * @param queue: item queue
  * @param name: name of item
- * 
+ *
  * @return :1 if delete successful, 0 if not found
-*/
+ */
 int delete_item(item **queue, char name[])
 {
     item *current = *queue;
@@ -85,13 +85,13 @@ int pop_item(item **queue)
 
 /**
  * check item is existt in queue or not
- * 
+ *
  * @param queue: item queue
  * @param item_name: name of item
- * 
+ *
  * @return :0 if not found
  *          1 if found
-*/
+ */
 int find_item(item *queue, char item_name[])
 {
     item *i = queue;
@@ -110,15 +110,9 @@ int addItem(char name[], int start_bid, int direct_sell_price, int sesit)
         return 1;
     if (sess_store[sesit].in_room == -1)
         return 2;
-    printf("Item adding\n");
-    
     if (find_item(room_store[sess_store[sesit].in_room].item_queue, name))
         return 3;
-    printf("Item adding\n");
-    
     item *new_item = create_item_node(name, sesit, start_bid, direct_sell_price);
-    printf("Item adding\n");
-
     pthread_mutex_lock(&room_mutex);
     push_item(&(room_store[sess_store[sesit].in_room].item_queue), new_item);
     pthread_mutex_unlock(&room_mutex);

@@ -4,7 +4,7 @@
 #include<pthread.h>
 #include "item_model.h"
 
-#define ROOM_SIZE 3
+#define ROOM_SIZE 30
 #define ROOM_NAME_MAX_LENGTH 30
 
 /**
