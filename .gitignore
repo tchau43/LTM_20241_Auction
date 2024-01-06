@@ -1,0 +1,27 @@
+# Ignore các tệp tạm thời và build
+*.log
+*.swp
+*.tmp
+build/
+dist/
+
+# Ignore các tệp và thư mục được tạo ra bởi IDEs
+.idea/
+.vscode/
+
+# Ignore các tệp cấu hình cụ thể cho ngôn ngữ lập trình cụ thể
+*.pyc
+__pycache__/
+*.class
+
+# Ignore các tệp và thư mục được tạo ra bởi các công cụ quản lý gói
+node_modules/
+vendor/
+
+# Ignore các tệp cấu hình máy cụ thể
+.env
+.env.local
+
+# Ignore .o file
+
+.o
