@@ -19,6 +19,14 @@ void init_room_store()
     printf("Init room\n");
 }
 
+/***
+ * find room by name in room storage
+ * 
+ * @param room_name: name of room to find
+ * 
+ * @return :i index of this room in room storage
+ *          -1 if not found
+*/
 int findRoom(char room_name[])
 {
     for (int i = 0; i < ROOM_NUM; i++)
