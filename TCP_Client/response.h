@@ -8,7 +8,10 @@
 #define WRONG_PASSWORD 2012 //  password wrong
 #define ALREADYLOGIN 2013 //  already login
 #define ACCLOGIN 2014 //  This account already login in other client
-#define ACCBLOCK 2015 // Account is blocked 
+#define ACCEXIST 2016 // Account is exist
+
+#define SIGNUPSUCESS 1110 //signup sucess
+#define SIGNUPFAIL 2111 //signup fail
 
 #define JOINNOK 1020 //  Join success
 #define NOTLOGIN 2021 //  Not logged in
@@ -46,6 +49,7 @@
 #define NEWBID 4002 //  Best price is 
 #define COUNTDOWN 4003 // Countdown pharse
 #define NEWITEMARRIVED 4004 // New item arrived
+
 /**
  * resolve a result code receive from server and print a message it meaning
  *
