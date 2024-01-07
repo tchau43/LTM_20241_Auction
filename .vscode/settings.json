@@ -4,6 +4,7 @@
         "stdlib.h": "c",
         "global_var.h": "c",
         "unistd.h": "c",
-        "send_msg.h": "c"
+        "send_msg.h": "c",
+        "typeinfo": "c"
     }
 }

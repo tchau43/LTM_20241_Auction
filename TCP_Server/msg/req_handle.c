@@ -127,8 +127,21 @@ int request_handle(int sesit, char *req)
             return send_code(sess_store[sesit].conn_sock, ROOMF);
             break;
         case ROOM_OK:
+            char infor_join[1024];
+            memset(infor_join, '\0', 1024);
+            strcat(infor_join, "1020");
+            char temp[1000];
+            if(room_store[sess_store[sesit].in_room].item_queue == NULL){
+                return send_msg(sess_store[sesit].conn_sock, infor_join);
+            }
+            sprintf(temp, " %s %d %d",
+                room_store[sess_store[sesit].in_room ].item_queue->name,
+                room_store[sess_store[sesit].in_room ].item_queue->current_bid,
+                room_store[sess_store[sesit].in_room ].item_queue->direct_sell_price);
+            strcat(infor_join,temp);
+            strcat(infor_join, "\r\n\0");
             write_to_log(sess_store[sesit].conn_sock, req, JOINNOK);
-            return send_code(sess_store[sesit].conn_sock, JOINNOK);
+            return send_msg(sess_store[sesit].conn_sock, infor_join);
             break;
         default:
             break;
