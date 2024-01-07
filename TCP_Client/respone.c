@@ -11,9 +11,6 @@ void res_code_resolver(int res_code)
     case LOGINOK:
         printf("Login successfully\n");
         break;
-    case ACCBLOCK:
-        printf("Account is banned\n");
-        break;
     case UNAMENF:
         printf("Account's not found\n");
         break;
@@ -26,6 +23,12 @@ void res_code_resolver(int res_code)
     case WRONG_PASSWORD:
         printf("Password is wrong\n");
         break;
+
+    //For Sign up
+    case SIGNUPSUCESS:
+        printf("Sign up successful\n");
+    case SIGNUPFAIL:
+        printf("Account already exist\n");
 
     // For logout
     case NOTLOGIN:
@@ -60,6 +63,12 @@ void res_code_resolver(int res_code)
         printf("You are already in room\n");
         break;
 
+    // For outroom
+    case OUTOK:
+        printf("Out room success\n");
+    case NOTINROOM:
+        printf("You are not in room\n");
+
     // For add item
     case ADDITEMOK:
         printf("Item added successfully\n");
@@ -68,8 +77,16 @@ void res_code_resolver(int res_code)
         printf("Item is already exist\n");
         break;
 
+    // For retrieve item
+    case RETRIEVEOK:
+        printf("Delete item successful\n");
+    case ALREADYAUCITEM:
+        printf("Item is already in auction\n");
+    case ITEMNE:
+        printf("Item is not exist\n");
+    case ITEMNO:
+        printf("You not own this item\n");
         // For bidding
-
     case BIDOK:
         printf("Auction done\n");
         break;

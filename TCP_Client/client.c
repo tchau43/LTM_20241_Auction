@@ -15,14 +15,11 @@
 
 #include "send_msg.h"
 #include "recv_msg.h"
+#include "menu.h"
+#include "global_var.h"
 
 #define BUFF_SIZE 1024
 #define CODE_SIZE 4
-
-#define LOGIN_CMD "USER"
-#define POST_CMD "POST"
-#define LOGOUT_CMD "BYE"
-
 
 int main(int argc, char *argv[])
 {
@@ -92,20 +89,42 @@ int main(int argc, char *argv[])
     pthread_t hear_thread;
     pthread_create(&hear_thread, NULL, &recv_msg_handle, &conn_sock);
     // Communicate with sever
-    while (1)
+    int window_state = 1;
+    do
     {
-        memset(buff, '\0', sizeof(buff));
-        printf("Enter message:");
-        fgets(buff, 1000, stdin);
-
-        if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
-            buff[strlen(buff) - 1] = '\0';
-        strcat(buff, "\r\n");
-        send_msg(conn_sock, buff);
-        while (getchar() != '\n')
+        switch (state)
         {
+        case -1:
+        case -2:
+            break;
+        case 0:
+            window_state = 0;
+            break;
+        case 1:
+            auth_menu_handle(conn_sock, buff);
+            break;
+        case 2:
+            main_menu_handle(conn_sock, buff);
+            break;
+        case 3:
+            in_room_handle(conn_sock, buff);
+        case 4:
+            memset(buff, '\0', sizeof(buff));
+            printf("Enter message:");
+            fgets(buff, 1000, stdin);
+
+            if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
+                buff[strlen(buff) - 1] = '\0';
+            strcat(buff, "\r\n");
+            send_msg(conn_sock, buff);
+            while (getchar() != '\n')
+            {
+            }
+            break;
+        default:
+            break;
         }
-    }
+    } while (window_state == 1);
     // Step 4: Close socket
     pthread_cancel(hear_thread);
     free(buff);

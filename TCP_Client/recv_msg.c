@@ -12,9 +12,11 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <pthread.h>
+#include <math.h>
 
 #include "recv_msg.h"
 #include "response.h"
+#include "global_var.h"
 
 #define CODE_SIZE 4
 #define DELIMITER "\r\n"
@@ -38,8 +40,48 @@ void msg_handle(char *msg)
     case COUNTDOWN:
         countdown_msg_resolver(msg + (CODE_SIZE + 1));
         break;
+<<<<<<< HEAD
     case GETROOML:
         roomlist_msg_resolver(msg + (CODE_SIZE + 1));
+=======
+    case LOGINOK:
+        pthread_mutex_lock(&state_mutex);
+        state = 2;
+        pthread_mutex_unlock(&state_mutex);
+        res_code_resolver(code);
+        break;
+    case LOGOUTOK:
+        pthread_mutex_lock(&state_mutex);
+        state = 1;
+        pthread_mutex_unlock(&state_mutex);
+        res_code_resolver(code);
+        break;
+    case JOINNOK:
+        pthread_mutex_lock(&state_mutex);
+        state = 3;
+        pthread_mutex_unlock(&state_mutex);
+        res_code_resolver(code);
+        break;
+    case OUTOK:
+        pthread_mutex_lock(&state_mutex);
+        state = 2;
+        pthread_mutex_unlock(&state_mutex);
+        res_code_resolver(code);
+        break;
+    case UNAMENF:
+    case WRONG_PASSWORD:
+    case ALREADYLOGIN:
+    case ACCLOGIN:
+    case NOTLOGIN:
+    case NOTINROOM:
+    case ROOMNE:
+    case ROOMF:
+        pthread_mutex_lock(&state_mutex);
+        state = abs(state);
+        pthread_mutex_unlock(&state_mutex);
+        res_code_resolver(code);
+        break;
+>>>>>>> main
     default:
         res_code_resolver(code);
         break;
