@@ -59,6 +59,7 @@ void msg_handle(char *msg)
         pthread_mutex_lock(&state_mutex);
         state = 3;
         pthread_mutex_unlock(&state_mutex);
+        infor_room_msg_resolver(msg + (CODE_SIZE + 1));
         res_code_resolver(code);
         break;
     case OUTOK:
@@ -125,7 +126,7 @@ void *recv_msg_handle(void *conn_sock)
             {
                 int part2_n = strlen(part2);
                 strncat(buff, req, strlen(req) - part2_n);
-                printf("%s\n", buff);
+                // printf("%s\n", buff);
                 if (strlen(buff) > 0)
                     msg_handle(buff);
                 memset(buff, '\0', sizeof(buff));

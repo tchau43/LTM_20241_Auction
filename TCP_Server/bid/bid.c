@@ -10,9 +10,9 @@
 #include "../item/item.h"
 #include "../msg/send_msg.h"
 
-#define EXTENDSTIME 10
-#define EXTENDSTIME2 3
-#define INCREMENTSTEP 5
+#define EXTENDSTIME 180
+#define EXTENDSTIME2 30
+#define INCREMENTSTEP 10
 
 /**
  * Annouce to all user in room
@@ -22,6 +22,8 @@
  * @param anno_type: annoucement type
  */
 void room_anno(int room_it, char *msg);
+
+char anno_msg[BUFF_SIZE];
 
 /**
  * start an auction
@@ -37,14 +39,14 @@ void *auction_start(void *roomit)
     // Send annocement to all user in room
     if (room_store[it].item_queue->best_cus == -1)
     {
-        char new_item_msg[BUFF_SIZE];
-        sprintf(new_item_msg, "%d %s %s %d %d",
+        memset(anno_msg, '\0', BUFF_SIZE);
+        sprintf(anno_msg, "%d %s %s %d %d",
                 NEWITEMARRIVED,
                 room_store[it].name,
                 room_store[it].item_queue->name,
                 room_store[it].item_queue->current_bid,
                 room_store[it].item_queue->direct_sell_price);
-        room_anno(it, new_item_msg);
+        room_anno(it, anno_msg);
     }
 
     // Start time counter
@@ -54,14 +56,14 @@ void *auction_start(void *roomit)
     for (int i = 0; i < 3; i++)
     {
         // Send annoucement to all user in room
-        char cd_msg[BUFF_SIZE];
-        sprintf(cd_msg, "%d %s %s %d %d",
+        memset(anno_msg, '\0', BUFF_SIZE);
+        sprintf(anno_msg, "%d %s %s %d %d",
                 COUNTDOWN,
                 room_store[it].name,
                 room_store[it].item_queue->name,
                 room_store[it].item_queue->current_bid,
                 i + 1);
-        room_anno(it, cd_msg);
+        room_anno(it, anno_msg);
 
         sleep(EXTENDSTIME2);
     }
@@ -73,13 +75,13 @@ void *auction_start(void *roomit)
     }
     else
     {
-        char sold_msg[BUFF_SIZE];
-        sprintf(sold_msg, "%d %s %s %s",
+        memset(anno_msg, '\0', BUFF_SIZE);
+        sprintf(anno_msg, "%d %s %s %s",
                 SOLDED,
                 room_store[it].name,
                 sess_store[room_store[it].item_queue->best_cus].username,
                 room_store[it].item_queue->name);
-        room_anno(it, sold_msg);
+        room_anno(it, anno_msg);
         printf("Item sold to %s\n", sess_store[room_store[it].item_queue->best_cus].username);
     }
 
@@ -128,13 +130,13 @@ int bidding(int sesit, int bid)
     // If bid is higher than buy out price
     if (bid >= room_store[sess_store[sesit].in_room].item_queue->direct_sell_price)
     {
-        char sold_msg[BUFF_SIZE];
-        sprintf(sold_msg, "%d %s %s %s",
+        memset(anno_msg, '\0', BUFF_SIZE);
+        sprintf(anno_msg, "%d %s %s %s",
                 SOLDED,
                 room_store[sess_store[sesit].in_room].name,
                 sess_store[sesit].username,
                 room_store[sess_store[sesit].in_room].item_queue->name);
-        room_anno(sess_store[sesit].in_room, sold_msg);
+        room_anno(sess_store[sesit].in_room, anno_msg);
         send_code(sess_store[sesit].conn_sock, BIDOK);
 
         printf("Item sold to %s\n", sess_store[sesit].username);
@@ -148,15 +150,14 @@ int bidding(int sesit, int bid)
         room_store[sess_store[sesit].in_room].item_queue->current_bid = bid;
         start_auction(sess_store[sesit].in_room);
 
-        char new_bid_msg[BUFF_SIZE];
-        sprintf(new_bid_msg, "%d %s %s %s %d\r\n",
+        memset(anno_msg, '\0', BUFF_SIZE);
+        sprintf(anno_msg, "%d %s %s %s %d\r\n",
                 NEWBID,
                 room_store[sess_store[sesit].in_room].name,
                 room_store[sess_store[sesit].in_room].item_queue->name,
                 sess_store[sesit].username,
                 bid);
-        printf("Anno: %s\n", new_bid_msg);
-        room_anno(sess_store[sesit].in_room, new_bid_msg);
+        room_anno(sess_store[sesit].in_room, anno_msg);
     }
     return 0;
 }
@@ -175,13 +176,13 @@ int buynow(int sesit)
     pthread_cancel(room_store[sess_store[sesit].in_room].time_counter);
 
     // Annouce to all user
-    char sold_msg[BUFF_SIZE];
-    sprintf(sold_msg, "%d %s %s %s",
+    memset(anno_msg, '\0', BUFF_SIZE);
+    sprintf(anno_msg, "%d %s %s %s",
             SOLDED,
             room_store[sess_store[sesit].in_room].name,
             sess_store[sesit].username,
             room_store[sess_store[sesit].in_room].item_queue->name);
-    room_anno(sess_store[sesit].in_room, sold_msg);
+    room_anno(sess_store[sesit].in_room, anno_msg);
 
     printf("Item sold to %s\n", sess_store[sesit].username);
     pop_item(&(room_store[sess_store[sesit].in_room].item_queue));
@@ -203,7 +204,6 @@ void room_anno(int room_it, char *msg)
     {
         if (room_store[room_it].userList[i] >= 0)
         {
-            printf("Anno to %s\n", sess_store[room_store[room_it].userList[i]].username);
             send_msg(sess_store[room_store[room_it].userList[i]].conn_sock, msg);
         }
     }
