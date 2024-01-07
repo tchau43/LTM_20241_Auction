@@ -1,0 +1,1 @@
+void write_to_log(int cmd, char* input, int res);
