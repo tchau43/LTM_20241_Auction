@@ -40,10 +40,9 @@ void msg_handle(char *msg)
     case COUNTDOWN:
         countdown_msg_resolver(msg + (CODE_SIZE + 1));
         break;
-<<<<<<< HEAD
     case GETROOML:
         roomlist_msg_resolver(msg + (CODE_SIZE + 1));
-=======
+        break;
     case LOGINOK:
         pthread_mutex_lock(&state_mutex);
         state = 2;
@@ -81,7 +80,6 @@ void msg_handle(char *msg)
         pthread_mutex_unlock(&state_mutex);
         res_code_resolver(code);
         break;
->>>>>>> main
     default:
         res_code_resolver(code);
         break;
