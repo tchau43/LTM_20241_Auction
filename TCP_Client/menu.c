@@ -50,7 +50,6 @@ void auth_menu_handle(int conn_sock, char *buff)
     auth_menu();
     int cmd;
     cmd = fgetc(stdin);
-    printf("cmd:%d\n", cmd);
     switch (cmd)
     {
     case '1':
@@ -199,28 +198,25 @@ void in_room_handle(int conn_sock, char *buff)
         {
         }
         // User can only enter 30 character. If more than 30, it will be cut
-        printf("buff:%s :%ld\n", buff, strlen(buff));
         printf("Enter item's name:");
         fgets(buff + strlen(buff), 30, stdin);
         if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
             buff[strlen(buff) - 1] = '\0';
 
         buff[strlen(buff)] = ' ';
-        printf("buff:%s :%ld\n", buff, strlen(buff));
         printf("Enter starting price (thousand VND):");
         fgets(buff + strlen(buff), 30, stdin);
 
         if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
             buff[strlen(buff) - 1] = '\0';
         buff[strlen(buff)] = ' ';
-        printf("buff:%s :%ld\n", buff, strlen(buff));
         printf("Enter buy out price (thousand VND):");
         fgets(buff + strlen(buff), 30, stdin);
 
         if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
             buff[strlen(buff) - 1] = '\0';
-        printf("buff:%s :%ld\n", buff, strlen(buff));
-        // strcat(buff, "\r\n");
+
+        strcat(buff, "\r\n\0");
 
         send_msg(conn_sock, buff);
         break;
@@ -251,7 +247,8 @@ void in_room_handle(int conn_sock, char *buff)
 
         if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
             buff[strlen(buff) - 1] = '\0';
-        strcat(buff, "\r\n");
+        strcat(buff, "\r\n\0");
+
         send_msg(conn_sock, buff);
         break;
     case '4':

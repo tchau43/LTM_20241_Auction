@@ -128,6 +128,8 @@ int retrieveItem(char item_name[],int sesit){
         return 1;
     if (sess_store[sesit].in_room == -1)
         return 2;
+    if(room_store[sess_store[sesit].in_room].item_queue == NULL)
+        return 0;
     if (strcmp(room_store[sess_store[sesit].in_room].item_queue->name,item_name) == 0){
         return 3;
     }

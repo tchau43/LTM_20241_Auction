@@ -18,6 +18,7 @@
 
 #include "../bid/bid.h"
 #include "../auth/auth_handle.h"
+#include "../log/log_writter.h"
 
 #define BUFF_SIZE 1024
 
@@ -52,34 +53,41 @@ int request_handle(int sesit, char *req)
     {
         if (sess_store[sesit].is_loggedin == 1)
         {
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYLOGIN);
             send_code(sess_store[sesit].conn_sock, ALREADYLOGIN);
             return 1;
         }
         char username[1024];
         char password[1024];
         memset(username, '\0', sizeof(username));
-        sscanf(req, "LOGIN %s %s", username, password);
-
-        switch (login_handle(username, password))
+        if (sscanf(req, "LOGIN %s %s", username, password) == 2)
         {
-        case LOGIN_SUCCESS:
-            sess_store[sesit].is_loggedin = 1;
-            strcpy(sess_store[sesit].username, username);
-            return send_code(sess_store[sesit].conn_sock, LOGINOK);
-        case LG_OTHER_CLIENT:
-            return send_code(sess_store[sesit].conn_sock, ACCLOGIN);
-        case INCORRECT_PASSWORD:
-            return send_code(sess_store[sesit].conn_sock, WRONG_PASSWORD);
-        case LG_USER_NOT_EXIST:
-            return send_code(sess_store[sesit].conn_sock, UNAMENF);
-        default:
-            break;
+            switch (login_handle(username, password))
+            {
+            case LOGIN_SUCCESS:
+                sess_store[sesit].is_loggedin = 1;
+                strcpy(sess_store[sesit].username, username);
+                write_to_log(sess_store[sesit].conn_sock, req, LOGINOK);
+                return send_code(sess_store[sesit].conn_sock, LOGINOK);
+            case LG_OTHER_CLIENT:
+                write_to_log(sess_store[sesit].conn_sock, req, ACCLOGIN);
+                return send_code(sess_store[sesit].conn_sock, ACCLOGIN);
+            case INCORRECT_PASSWORD:
+                write_to_log(sess_store[sesit].conn_sock, req, WRONG_PASSWORD);
+                return send_code(sess_store[sesit].conn_sock, WRONG_PASSWORD);
+            case LG_USER_NOT_EXIST:
+                write_to_log(sess_store[sesit].conn_sock, req, UNAMENF);
+                return send_code(sess_store[sesit].conn_sock, UNAMENF);
+            default:
+                break;
+            }
         }
     }
     else if (strcmp(cmd, "SIGNUP") == 0)
     {
         if (sess_store[sesit].is_loggedin == 1)
         {
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYLOGIN);
             send_code(sess_store[sesit].conn_sock, ALREADYLOGIN);
             return 1;
         }
@@ -89,8 +97,10 @@ int request_handle(int sesit, char *req)
         sscanf(req, "SIGNUP %s %s", username, password);
         if (signup_handle(username, password))
         {
+            write_to_log(sess_store[sesit].conn_sock, req, SIGNUPSUCESS);
             return send_code(sess_store[sesit].conn_sock, SIGNUPSUCESS);
         }
+        write_to_log(sess_store[sesit].conn_sock, req, SIGNUPFAIL);
         return send_code(sess_store[sesit].conn_sock, SIGNUPFAIL);
     }
     else if (strcmp(cmd, "JOIN") == 0)
@@ -101,22 +111,26 @@ int request_handle(int sesit, char *req)
         switch (join_room(room_name, sesit))
         {
         case USER_NOT_LOGINED_IN:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
             break;
         case ALREADY_IN_ROOM:
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYINROOM);
             return send_code(sess_store[sesit].conn_sock, ALREADYINROOM);
             break;
         case ROOM_NOT_FOUND:
+            write_to_log(sess_store[sesit].conn_sock, req, ROOMNE);
             return send_code(sess_store[sesit].conn_sock, ROOMNE);
             break;
         case FULL_ROOM:
+            write_to_log(sess_store[sesit].conn_sock, req, ROOMF);
             return send_code(sess_store[sesit].conn_sock, ROOMF);
             break;
         case ROOM_OK:
+            write_to_log(sess_store[sesit].conn_sock, req, JOINNOK);
             return send_code(sess_store[sesit].conn_sock, JOINNOK);
             break;
         default:
-            return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
             break;
         }
     }
@@ -129,25 +143,33 @@ int request_handle(int sesit, char *req)
         if (strlen(room_name) <= 0)
         {
             printf("Not found Name\n");
+            write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
         }
 
         switch (create_room(room_name, sess_store[sesit]))
         {
         case 0:
+            write_to_log(sess_store[sesit].conn_sock, req, ROOMCROK);
             return send_code(sess_store[sesit].conn_sock, ROOMCROK);
         case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, ROOMLFULL);
             return send_code(sess_store[sesit].conn_sock, ROOMLFULL);
         case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYEXISTR);
             return send_code(sess_store[sesit].conn_sock, ALREADYEXISTR);
         case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         }
     }
     else if (strcmp(cmd, "ROOML") == 0)
     {
         if (!sess_store[sesit].is_loggedin)
+        {
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        }
         char list_room[1024];
         memset(list_room, '\0', 1024);
         strcat(list_room, "1050 ");
@@ -160,6 +182,7 @@ int request_handle(int sesit, char *req)
             }
         }
         strcat(list_room, "\r\n\0");
+        write_to_log(sess_store[sesit].conn_sock, req, GETROOML);
         return send_msg(sess_store[sesit].conn_sock, list_room);
     }
     else if (strcmp(cmd, "OUTROOM") == 0)
@@ -167,10 +190,13 @@ int request_handle(int sesit, char *req)
         switch (out_room(sesit))
         {
         case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, OUTOK);
             return send_code(sess_store[sesit].conn_sock, OUTOK);
         case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTINROOM);
             return send_code(sess_store[sesit].conn_sock, NOTINROOM);
         }
     }
@@ -181,23 +207,26 @@ int request_handle(int sesit, char *req)
         if (sscanf(req, "ITEMADD %s %d %d", item_name, &stating_bid, &direct_sell_price) != 3)
         {
             printf("Agrument not enough\n");
+            write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
         }
         switch (addItem(item_name, stating_bid, direct_sell_price, sesit))
         {
 
         case 0:
-            printf("Item added\n");
+            write_to_log(sess_store[sesit].conn_sock, req, ADDITEMOK);
             return send_code(sess_store[sesit].conn_sock, ADDITEMOK);
         case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTINROOM);
             return send_code(sess_store[sesit].conn_sock, NOTINROOM);
         case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYEXISTITEM);
             return send_code(sess_store[sesit].conn_sock, ALREADYEXISTITEM);
         default:
             printf("It's a bug\n");
-            return send_code(sess_store[sesit].conn_sock, 300);
         }
     }
     else if (strcmp(cmd, "ITEMRETRIEVE") == 0)
@@ -208,19 +237,26 @@ int request_handle(int sesit, char *req)
             printf("Agrument not invalid\n");
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
         }
-        switch(retrieveItem(item_name,sesit)){
-            case 0:
-                return send_code(sess_store[sesit].conn_sock, ITEMNE);
-            case 1:
-                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
-            case 2:
-                return send_code(sess_store[sesit].conn_sock, NOTINROOM);
-            case 3:
-                return send_code(sess_store[sesit].conn_sock, ALREADYAUCITEM);
-            case 4:
-                return send_code(sess_store[sesit].conn_sock, RETRIEVEOK);
-            case 5:
-                return send_code(sess_store[sesit].conn_sock, ITEMNO);
+        switch (retrieveItem(item_name, sesit))
+        {
+        case 0:
+            write_to_log(sess_store[sesit].conn_sock, req, ITEMNE);
+            return send_code(sess_store[sesit].conn_sock, ITEMNE);
+        case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
+            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTINROOM);
+            return send_code(sess_store[sesit].conn_sock, NOTINROOM);
+        case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, ALREADYAUCITEM);
+            return send_code(sess_store[sesit].conn_sock, ALREADYAUCITEM);
+        case 4:
+            write_to_log(sess_store[sesit].conn_sock, req, RETRIEVEOK);
+            return send_code(sess_store[sesit].conn_sock, RETRIEVEOK);
+        case 5:
+            write_to_log(sess_store[sesit].conn_sock, req, ITEMNO);
+            return send_code(sess_store[sesit].conn_sock, ITEMNO);
         }
     }
     else if (strcmp(cmd, "BID") == 0)
@@ -231,14 +267,19 @@ int request_handle(int sesit, char *req)
         {
         case 0:
             // return send_code(sess_store[sesit].conn_sock, BIDOK);
+            write_to_log(sess_store[sesit].conn_sock, req, BIDOK);
             return 1;
         case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTINROOM);
             return send_code(sess_store[sesit].conn_sock, NOTINROOM);
         case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, NOITEM);
             return send_code(sess_store[sesit].conn_sock, NOITEM);
         case 4:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTHIGHER);
             return send_code(sess_store[sesit].conn_sock, NOTHIGHER);
         default:
             printf("It's a bug\n");
@@ -253,27 +294,37 @@ int request_handle(int sesit, char *req)
         case 0:
             return 1;
         case 1:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         case 2:
+            write_to_log(sess_store[sesit].conn_sock, req, NOTINROOM);
             return send_code(sess_store[sesit].conn_sock, NOTINROOM);
         case 3:
+            write_to_log(sess_store[sesit].conn_sock, req, NOITEM);
             return send_code(sess_store[sesit].conn_sock, NOITEM);
         default:
             printf("It's a bug\n");
             return send_code(sess_store[sesit].conn_sock, 300);
+            break;
         }
     }
     else if (strcmp(cmd, "LOGOUT") == 0)
     {
         if (!sess_store[sesit].is_loggedin)
+        {
+            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
             return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        }
         out_room(sesit);
         sess_store[sesit].username[0] = '\0';
         sess_store[sesit].is_loggedin = 0;
+        write_to_log(sess_store[sesit].conn_sock, req, LOGOUTOK);
         return send_code(sess_store[sesit].conn_sock, LOGOUTOK);
     }
     else
-        return send_code(sess_store[sesit].conn_sock, 300);
-
+    {
+        write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+        return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
+    }
     return 0;
 }
