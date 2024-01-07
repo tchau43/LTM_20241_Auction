@@ -34,8 +34,6 @@
 
  */
 
-
-
 /**
  * @function request_handle: handle the request that received from client and send the result code
  *
@@ -66,9 +64,9 @@ int request_handle(int sesit, char *req)
         {
         case LOGIN_SUCCESS:
             sess_store[sesit].is_loggedin = 1;
-            strcpy(sess_store[sesit].username,username);
+            strcpy(sess_store[sesit].username, username);
             return send_code(sess_store[sesit].conn_sock, LOGINOK);
-        case LG_OTHER_CLIENT: 
+        case LG_OTHER_CLIENT:
             return send_code(sess_store[sesit].conn_sock, ACCLOGIN);
         case INCORRECT_PASSWORD:
             return send_code(sess_store[sesit].conn_sock, WRONG_PASSWORD);
@@ -148,16 +146,32 @@ int request_handle(int sesit, char *req)
     }
     else if (strcmp(cmd, "ROOML") == 0)
     {
-        
+        if (!sess_store[sesit].is_loggedin)
+            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        char list_room[1024];
+        memset(list_room, '\0', 1024);
+        strcat(list_room, "1050 ");
+        for (int i = 0; i < ROOM_NUM; i++)
+        {
+            if (room_store[i].userNum != -1)
+            {
+                strcat(list_room, room_store[i].name);
+                strcat(list_room, "\n");
+            }
+        }
+        strcat(list_room, "\r\n\0");
+        return send_msg(sess_store[sesit].conn_sock, list_room);
     }
-    else if (strcmp(cmd, "OUTROOM") == 0) {
-        switch (out_room(sesit)){
-            case 1:
-                return send_code(sess_store[sesit].conn_sock, OUTOK);
-            case 2:
-                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
-            case 3:
-                return send_code(sess_store[sesit].conn_sock, NOTINROOM);
+    else if (strcmp(cmd, "OUTROOM") == 0)
+    {
+        switch (out_room(sesit))
+        {
+        case 1:
+            return send_code(sess_store[sesit].conn_sock, OUTOK);
+        case 2:
+            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        case 3:
+            return send_code(sess_store[sesit].conn_sock, NOTINROOM);
         }
     }
     else if (strcmp(cmd, "ITEMADD") == 0)
@@ -186,7 +200,29 @@ int request_handle(int sesit, char *req)
             return send_code(sess_store[sesit].conn_sock, 300);
         }
     }
-
+    else if (strcmp(cmd, "ITEMRETRIEVE") == 0)
+    {
+        char item_name[30];
+        if (sscanf(req, "ITEMRETRIEVE %s", item_name) != 1)
+        {
+            printf("Agrument not invalid\n");
+            return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
+        }
+        switch(retrieveItem(item_name,sesit)){
+            case 0:
+                return send_code(sess_store[sesit].conn_sock, ITEMNE);
+            case 1:
+                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+            case 2:
+                return send_code(sess_store[sesit].conn_sock, NOTINROOM);
+            case 3:
+                return send_code(sess_store[sesit].conn_sock, ALREADYAUCITEM);
+            case 4:
+                return send_code(sess_store[sesit].conn_sock, RETRIEVEOK);
+            case 5:
+                return send_code(sess_store[sesit].conn_sock, ITEMNO);
+        }
+    }
     else if (strcmp(cmd, "BID") == 0)
     {
         int bid;
@@ -229,7 +265,8 @@ int request_handle(int sesit, char *req)
     }
     else if (strcmp(cmd, "LOGOUT") == 0)
     {
-        if (!sess_store[sesit].is_loggedin) return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+        if (!sess_store[sesit].is_loggedin)
+            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
         out_room(sesit);
         sess_store[sesit].username[0] = '\0';
         sess_store[sesit].is_loggedin = 0;

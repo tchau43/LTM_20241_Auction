@@ -60,4 +60,5 @@ void new_bid_msg_resolver(char* msg);
 void new_item_msg_resolver(char* msg);
 void sold_msg_resolver(char* msg);
 void countdown_msg_resolver(char* msg);
+void roomlist_msg_resolver(char* msg);
 #endif

@@ -25,5 +25,5 @@ int pop_item(item** queue);
  * @return : 1 if OK
 */
 int addItem(char name[], int start_bid, int direct_sell_price, int sesit);
-
+int retrieveItem(char item_name[],int sesit);
 #endif

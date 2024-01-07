@@ -122,3 +122,28 @@ int addItem(char name[], int start_bid, int direct_sell_price, int sesit)
     }
     return 0;
 }
+
+int retrieveItem(char item_name[],int sesit){
+    if (!sess_store[sesit].is_loggedin)
+        return 1;
+    if (sess_store[sesit].in_room == -1)
+        return 2;
+    if (strcmp(room_store[sess_store[sesit].in_room].item_queue->name,item_name) == 0){
+        return 3;
+    }
+    item *i = room_store[sess_store[sesit].in_room].item_queue;
+    while (i != NULL)
+    {
+        if (strcmp(i->name, item_name) == 0){
+            if (sesit == i->owner){
+                pthread_mutex_lock(&room_mutex);
+                delete_item(&(room_store[sess_store[sesit].in_room].item_queue),item_name);
+                pthread_mutex_unlock(&room_mutex);
+                return 4;
+            }
+            else return 5;
+        }          
+        i = i->next;
+    }
+    return 0;
+}
