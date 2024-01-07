@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
             break;
         case 3:
             in_room_handle(conn_sock, buff);
+            break;
         case 4:
             memset(buff, '\0', sizeof(buff));
             printf("Enter message:");

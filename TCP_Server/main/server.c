@@ -103,6 +103,11 @@ int main(int argc, char *argv[])
                     printf("Too many client\n");
                     close(connfd);
                 }
+                else if (connfd > 1024)
+                {
+                    printf("Too many client\n");
+                    close(connfd);
+                }
                 else
                 {
                     FD_SET(connfd, &allset);
