@@ -22,7 +22,10 @@ int pop_item(item** queue);
  * @param direct_sell_price: buyout price
  * @param sesit: iterator of session in session storage
  * 
- * @return : 1 if OK
+ * @return :0 if OK
+ *          1 if not logged in
+ *          2 if not in room
+ *          3 if item already exist 
 */
 int addItem(char name[], int start_bid, int direct_sell_price, int sesit);
 int retrieveItem(char item_name[],int sesit);

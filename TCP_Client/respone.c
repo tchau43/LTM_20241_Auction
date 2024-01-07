@@ -27,7 +27,9 @@ void res_code_resolver(int res_code)
     // For Sign up
     case SIGNUPSUCESS:
         printf("Sign up successful\n");
+        break;
     case SIGNUPFAIL:
+    break;
         printf("Account already exist\n");
 
     // For logout
@@ -66,8 +68,10 @@ void res_code_resolver(int res_code)
     // For outroom
     case OUTOK:
         printf("Out room success\n");
+        break;
     case NOTINROOM:
         printf("You are not in room\n");
+        break;
 
     // For add item
     case ADDITEMOK:
@@ -80,12 +84,17 @@ void res_code_resolver(int res_code)
     // For retrieve item
     case RETRIEVEOK:
         printf("Delete item successful\n");
+        break;
     case ALREADYAUCITEM:
         printf("Item is already in auction\n");
+        break;
     case ITEMNE:
         printf("Item is not exist\n");
+        break;
     case ITEMNO:
         printf("You not own this item\n");
+        break;
+
         // For bidding
     case BIDOK:
         printf("Auction done\n");
@@ -144,11 +153,6 @@ void countdown_msg_resolver(char *msg)
     printf("%d time: %d\n", times, bid);
 }
 
-void roomlist_msg_resolver(char *msg)
-{
-    printf("List room: \n%s\n", msg);
-}
-
 void infor_room_msg_resolver(char *msg)
 {
     printf("%s\n",msg);
@@ -156,4 +160,9 @@ void infor_room_msg_resolver(char *msg)
     int start_bid, direct_sell_price;
     sscanf(msg, "%s %d %d", item_name, &start_bid, &direct_sell_price);
     printf("Item %s: Starting bid: %d || Buyout price: %d\n", item_name, start_bid, direct_sell_price);
+}
+
+void roomlist_msg_resolver(char *msg) {
+    printf("Room list :\n");
+    printf("%s\n", msg);
 }
