@@ -24,7 +24,7 @@ void res_code_resolver(int res_code)
         printf("Password is wrong\n");
         break;
 
-    //For Sign up
+    // For Sign up
     case SIGNUPSUCESS:
         printf("Sign up successful\n");
     case SIGNUPFAIL:
@@ -144,6 +144,16 @@ void countdown_msg_resolver(char *msg)
     printf("%d time: %d\n", times, bid);
 }
 
-void roomlist_msg_resolver(char *msg) {
-    printf("%s\n", msg);
+void roomlist_msg_resolver(char *msg)
+{
+    printf("List room: \n%s\n", msg);
+}
+
+void infor_room_msg_resolver(char *msg)
+{
+    printf("%s\n",msg);
+    char item_name[30];
+    int start_bid, direct_sell_price;
+    sscanf(msg, "%s %d %d", item_name, &start_bid, &direct_sell_price);
+    printf("Item %s: Starting bid: %d || Buyout price: %d\n", item_name, start_bid, direct_sell_price);
 }
