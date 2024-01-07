@@ -126,3 +126,7 @@ void countdown_msg_resolver(char *msg)
     printf("Room %s: Countdown for item %s\n", room, item);
     printf("%d time: %d\n", times, bid);
 }
+
+void roomlist_msg_resolver(char *msg) {
+    printf("%s\n", msg);
+}

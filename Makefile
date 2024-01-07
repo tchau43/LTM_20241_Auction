@@ -5,6 +5,6 @@ clean:
 	@$(MAKE) -C TCP_Server clean 
 	@$(MAKE) -C TCP_Client clean
 runs:
-	./server 5550
+	./server 5551
 runc:
-	./client 127.0.0.1 5550
+	./client 127.0.0.1 5551

@@ -38,6 +38,8 @@ void msg_handle(char *msg)
     case COUNTDOWN:
         countdown_msg_resolver(msg + (CODE_SIZE + 1));
         break;
+    case GETROOML:
+        roomlist_msg_resolver(msg + (CODE_SIZE + 1));
     default:
         res_code_resolver(code);
         break;
