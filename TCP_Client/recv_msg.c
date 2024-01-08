@@ -68,6 +68,7 @@ void msg_handle(char *msg)
         pthread_mutex_unlock(&state_mutex);
         res_code_resolver(code);
         break;
+    case SYNTAXERR: //
     case UNAMENF:
     case WRONG_PASSWORD:
     case ALREADYLOGIN:

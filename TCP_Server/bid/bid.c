@@ -10,7 +10,7 @@
 #include "../item/item.h"
 #include "../msg/send_msg.h"
 
-#define EXTENDSTIME 180
+#define EXTENDSTIME 30
 #define EXTENDSTIME2 30
 #define INCREMENTSTEP 10
 
