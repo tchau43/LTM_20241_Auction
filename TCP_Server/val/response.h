@@ -8,7 +8,6 @@
 #define WRONG_PASSWORD 2012 //  password wrong
 #define ALREADYLOGIN 2013 //  already login
 #define ACCLOGIN 2014 //  This account already login in other client
-#define ACCBLOCK 2015 // Account is blocked 
 #define ACCEXIST 2016 // Account is exist
 
 #define SIGNUPSUCESS 1110 //signup sucess

@@ -158,8 +158,11 @@ void infor_room_msg_resolver(char *msg)
     printf("%s\n",msg);
     char item_name[30];
     int start_bid, direct_sell_price;
-    sscanf(msg, "%s %d %d", item_name, &start_bid, &direct_sell_price);
-    printf("Item %s: Starting bid: %d || Buyout price: %d\n", item_name, start_bid, direct_sell_price);
+    if(sscanf(msg, "%s %d %d", item_name, &start_bid, &direct_sell_price) == 3){
+        printf("Item %s: Starting bid: %d || Buyout price: %d\n", item_name, start_bid, direct_sell_price);
+    }
+    else printf("No item bided\n");
+    
 }
 
 void roomlist_msg_resolver(char *msg) {

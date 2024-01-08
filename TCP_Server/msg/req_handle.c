@@ -60,6 +60,7 @@ int request_handle(int sesit, char *req)
         char username[1024];
         char password[1024];
         memset(username, '\0', sizeof(username));
+        memset(password, '\0', sizeof(password));
         if (sscanf(req, "LOGIN %s %s", username, password) == 2)
         {
             switch (login_handle(username, password))
@@ -82,6 +83,8 @@ int request_handle(int sesit, char *req)
                 break;
             }
         }
+        write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+        return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
     }
     else if (strcmp(cmd, "SIGNUP") == 0)
     {
@@ -94,88 +97,102 @@ int request_handle(int sesit, char *req)
         char username[1024];
         char password[1024];
         memset(username, '\0', sizeof(username));
-        sscanf(req, "SIGNUP %s %s", username, password);
-        if (signup_handle(username, password))
+        memset(password, '\0', sizeof(password));
+        if (sscanf(req, "SIGNUP %s %s", username, password) == 2)
         {
-            write_to_log(sess_store[sesit].conn_sock, req, SIGNUPSUCESS);
-            return send_code(sess_store[sesit].conn_sock, SIGNUPSUCESS);
+            if (signup_handle(username, password))
+            {
+                write_to_log(sess_store[sesit].conn_sock, req, SIGNUPSUCESS);
+                return send_code(sess_store[sesit].conn_sock, SIGNUPSUCESS);
+            }
+            write_to_log(sess_store[sesit].conn_sock, req, SIGNUPFAIL);
+            return send_code(sess_store[sesit].conn_sock, SIGNUPFAIL);
         }
-        write_to_log(sess_store[sesit].conn_sock, req, SIGNUPFAIL);
-        return send_code(sess_store[sesit].conn_sock, SIGNUPFAIL);
+        write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+        return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
     }
     else if (strcmp(cmd, "JOIN") == 0)
     {
         char room_name[1024];
         memset(room_name, '\0', sizeof(room_name));
-        sscanf(req, "JOIN %s", room_name);
-        char* infor_join = (char *)malloc(BUFF_SIZE);
-        switch (join_room(room_name, sesit))
+        char *infor_join = (char *)malloc(BUFF_SIZE);
+        if (sscanf(req, "JOIN %s", room_name) == 1)
         {
-        case USER_NOT_LOGINED_IN:
-            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
-            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
-            break;
-        case ALREADY_IN_ROOM:
-            write_to_log(sess_store[sesit].conn_sock, req, ALREADYINROOM);
-            return send_code(sess_store[sesit].conn_sock, ALREADYINROOM);
-            break;
-        case ROOM_NOT_FOUND:
-            write_to_log(sess_store[sesit].conn_sock, req, ROOMNE);
-            return send_code(sess_store[sesit].conn_sock, ROOMNE);
-            break;
-        case FULL_ROOM:
-            write_to_log(sess_store[sesit].conn_sock, req, ROOMF);
-            return send_code(sess_store[sesit].conn_sock, ROOMF);
-            break;
-        case ROOM_OK:
-            memset(infor_join, '\0', 1024);
-            strcat(infor_join, "1020");
-            char temp[1000];
-            if (room_store[sess_store[sesit].in_room].item_queue == NULL)
+            switch (join_room(room_name, sesit))
             {
+            case USER_NOT_LOGINED_IN:
+                write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
+                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+                break;
+            case ALREADY_IN_ROOM:
+                write_to_log(sess_store[sesit].conn_sock, req, ALREADYINROOM);
+                return send_code(sess_store[sesit].conn_sock, ALREADYINROOM);
+                break;
+            case ROOM_NOT_FOUND:
+                write_to_log(sess_store[sesit].conn_sock, req, ROOMNE);
+                return send_code(sess_store[sesit].conn_sock, ROOMNE);
+                break;
+            case FULL_ROOM:
+                write_to_log(sess_store[sesit].conn_sock, req, ROOMF);
+                return send_code(sess_store[sesit].conn_sock, ROOMF);
+                break;
+            case ROOM_OK:
+                memset(infor_join, '\0', 1024);
+                strcat(infor_join, "1020");
+                char temp[1000];
+                if (room_store[sess_store[sesit].in_room].item_queue == NULL)
+                {
+                    return send_msg(sess_store[sesit].conn_sock, infor_join);
+                }
+                sprintf(temp, " %s %d %d",
+                        room_store[sess_store[sesit].in_room].item_queue->name,
+                        room_store[sess_store[sesit].in_room].item_queue->current_bid,
+                        room_store[sess_store[sesit].in_room].item_queue->direct_sell_price);
+                strcat(infor_join, temp);
+                strcat(infor_join, "\r\n\0");
+                write_to_log(sess_store[sesit].conn_sock, req, JOINNOK);
                 return send_msg(sess_store[sesit].conn_sock, infor_join);
+                break;
+            default:
+                break;
             }
-            sprintf(temp, " %s %d %d",
-                    room_store[sess_store[sesit].in_room].item_queue->name,
-                    room_store[sess_store[sesit].in_room].item_queue->current_bid,
-                    room_store[sess_store[sesit].in_room].item_queue->direct_sell_price);
-            strcat(infor_join, temp);
-            strcat(infor_join, "\r\n\0");
-            write_to_log(sess_store[sesit].conn_sock, req, JOINNOK);
-            return send_msg(sess_store[sesit].conn_sock, infor_join);
-            break;
-        default:
-            break;
         }
+        write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+        return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
     }
 
     // Create Room Handle
     else if (strcmp(cmd, "ROOMCR") == 0)
     {
         char room_name[30];
-        sscanf(req, "ROOMCR %s", room_name);
-        if (strlen(room_name) <= 0)
+        memset(room_name, '\0', sizeof(room_name));
+        if (sscanf(req, "ROOMCR %s", room_name) == 1)
         {
-            printf("Not found Name\n");
-            write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
-            return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
-        }
+            if (strlen(room_name) <= 0)
+            {
+                printf("Not found Name\n");
+                write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+                return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
+            }
 
-        switch (create_room(room_name, sess_store[sesit]))
-        {
-        case 0:
-            write_to_log(sess_store[sesit].conn_sock, req, ROOMCROK);
-            return send_code(sess_store[sesit].conn_sock, ROOMCROK);
-        case 1:
-            write_to_log(sess_store[sesit].conn_sock, req, ROOMLFULL);
-            return send_code(sess_store[sesit].conn_sock, ROOMLFULL);
-        case 2:
-            write_to_log(sess_store[sesit].conn_sock, req, ALREADYEXISTR);
-            return send_code(sess_store[sesit].conn_sock, ALREADYEXISTR);
-        case 3:
-            write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
-            return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+            switch (create_room(room_name, sess_store[sesit]))
+            {
+            case 0:
+                write_to_log(sess_store[sesit].conn_sock, req, ROOMCROK);
+                return send_code(sess_store[sesit].conn_sock, ROOMCROK);
+            case 1:
+                write_to_log(sess_store[sesit].conn_sock, req, ROOMLFULL);
+                return send_code(sess_store[sesit].conn_sock, ROOMLFULL);
+            case 2:
+                write_to_log(sess_store[sesit].conn_sock, req, ALREADYEXISTR);
+                return send_code(sess_store[sesit].conn_sock, ALREADYEXISTR);
+            case 3:
+                write_to_log(sess_store[sesit].conn_sock, req, NOTLOGIN);
+                return send_code(sess_store[sesit].conn_sock, NOTLOGIN);
+            }
         }
+        write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
+        return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
     }
     else if (strcmp(cmd, "ROOML") == 0)
     {

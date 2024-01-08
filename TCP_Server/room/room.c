@@ -11,7 +11,7 @@ void init_room_store()
         memset(room_store[i].name, '\0', ROOM_NAME_MAX_LENGTH);
         room_store[i].item_queue = NULL;
         room_store[i].userNum = -1;
-        for (int j = 0; j < 30; j++)
+        for (int j = 0; j < ROOM_SIZE; j++) //cho bug
         {
             room_store[i].userList[j] = -1;
         }
@@ -77,10 +77,10 @@ enum RoomStatus join_room(char room_name[], int sesit)
         return ROOM_NOT_FOUND;
     }
 
-    if (room_store[it].userNum == ROOM_NUM)
+    if (room_store[it].userNum == ROOM_SIZE)
         return FULL_ROOM;
 
-    for (int i = 0; i < ROOM_NUM; i++)
+    for (int i = 0; i < ROOM_SIZE; i++)
     {
         if (room_store[it].userList[i] == -1)
         {
@@ -101,7 +101,7 @@ int out_room(int sesit){
     if (sess_store[sesit].in_room == -1)
         return 3; // account not in room
     room_store[sess_store[sesit].in_room].userNum--;
-    for (int i = 0; i < ROOM_NUM; i++)
+    for (int i = 0; i < ROOM_SIZE; i++)
     {
         if(room_store[sess_store[sesit].in_room].userList[i] == sesit) {
             room_store[sess_store[sesit].in_room].userList[i] = -1;
