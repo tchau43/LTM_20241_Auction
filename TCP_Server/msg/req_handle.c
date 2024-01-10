@@ -241,7 +241,7 @@ int request_handle(int sesit, char *req)
             write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);
         }
-        if (stating_bid <= 0 || direct_sell_price <= 0){
+        if (stating_bid <= 0 || direct_sell_price <= 0 || stating_bid >= direct_sell_price){
             printf("Agrument invalid\n");
             write_to_log(sess_store[sesit].conn_sock, req, SYNTAXERR);
             return send_code(sess_store[sesit].conn_sock, SYNTAXERR);

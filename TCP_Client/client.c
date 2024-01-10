@@ -110,16 +110,19 @@ int main(int argc, char *argv[])
             in_room_handle(conn_sock, buff);
             break;
         case 4:
-            memset(buff, '\0', sizeof(buff));
-            printf("Enter message:");
-            fgets(buff, 1000, stdin);
-
-            if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
-                buff[strlen(buff) - 1] = '\0';
-            strcat(buff, "\r\n");
-            send_msg(conn_sock, buff);
-            while (getchar() != '\n')
+            while (1)
             {
+                memset(buff, '\0', sizeof(buff));
+                printf("Enter message:");
+                fgets(buff, 1000, stdin);
+
+                if (buff[strlen(buff) - 1] == '\n' || buff[strlen(buff) - 1] == '\r')
+                    buff[strlen(buff) - 1] = '\0';
+                strcat(buff, "\r\n");
+                send_msg(conn_sock, buff);
+                while (getchar() != '\n')
+                {
+                }
             }
             break;
         default:
