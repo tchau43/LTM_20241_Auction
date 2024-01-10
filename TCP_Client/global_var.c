@@ -2,4 +2,4 @@
 
 pthread_mutex_t state_mutex;
 
-int state = 1;
+int state = 4;

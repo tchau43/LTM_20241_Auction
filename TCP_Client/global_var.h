@@ -14,6 +14,7 @@ extern pthread_mutex_t state_mutex;
  *  1 auth menu
  *  2 main menu
  *  3 inroom menu
+ *  4 for testing program
  * */
 extern int state;
 
