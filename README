@@ -1,0 +1,10 @@
+Ung dung dau gia
+
+Ung dung phat trien trong moi truong he dieu hanh ubuntu 20.04, su dung gcc C11 standard
+
+De compile, su dung make:
+	make all
+De khoi chay server
+	./server [port_number]
+De khoi chay client
+	./client [ip_address] [port_number]
